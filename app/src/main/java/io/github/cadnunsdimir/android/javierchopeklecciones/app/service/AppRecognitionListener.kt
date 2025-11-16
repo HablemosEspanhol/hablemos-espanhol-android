@@ -2,7 +2,9 @@ package io.github.cadnunsdimir.android.javierchopeklecciones.app.service
 
 import android.os.Bundle
 import android.speech.RecognitionListener
+import android.speech.RecognizerIntent
 import android.speech.SpeechRecognizer
+import android.util.Log
 
 class SpeechRecognitionListener(
     private val onResult: (String) -> Unit,
@@ -11,6 +13,17 @@ class SpeechRecognitionListener(
 ) : RecognitionListener {
 
     override fun onResults(results: Bundle?) {
+        val languageTag = results?.getString(
+            RecognizerIntent.EXTRA_LANGUAGE
+        )
+
+        // Opcional: O modelo de idioma usado
+        val languageModel = results?.getString(
+            RecognizerIntent.EXTRA_LANGUAGE_MODEL
+        )
+
+        Log.d("SpeechRecognitionListener", "Idioma Recognizado (Tag): $languageTag")
+        Log.d("SpeechRecognitionListener", "Modelo de Idioma: $languageModel")
         val matches = results?.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)
         if (!matches.isNullOrEmpty()) {
             onResult(matches[0])
