@@ -1,13 +1,15 @@
-package io.github.cadnunsdimir.android.javierchopeklecciones.ui.stt
+package io.github.cadnunsdimir.android.javierchopeklecciones.ui.screen
 
 import android.Manifest
 import android.content.Intent
 import android.speech.RecognizerIntent
 import android.speech.SpeechRecognizer
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -29,8 +31,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
@@ -39,16 +44,16 @@ import io.github.cadnunsdimir.android.javierchopeklecciones.app.repository.Lesso
 import io.github.cadnunsdimir.android.javierchopeklecciones.app.service.SpeechRecognitionListener
 import java.text.Normalizer
 
-
 const val WAITING = "Aguardando..."
 const val RECORD = "Gravar Pronúncia"
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
-fun OfflineSpeechToTextScreen() {
-
+fun LessonScreen() {
     val context = LocalContext.current
-    val lesson = LessonRepository.getLesson(1) as Lesson
+    val lessonEntity = LessonRepository.getLesson(1) as Lesson
+    lessonEntity.randomizeQuestions()
+    var lesson by remember { mutableStateOf(lessonEntity) }
     var recognizedText by remember { mutableStateOf(WAITING) }
     var buttonText by remember { mutableStateOf(RECORD) }
     val speechRecognizer = remember { SpeechRecognizer.createSpeechRecognizer(context) }
@@ -102,38 +107,112 @@ fun OfflineSpeechToTextScreen() {
         buttonText = "Ouvindo ..."
     }
 
-    Column(Modifier.fillMaxSize().padding(16.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-        LessonProgressBar(percentualProgress)
-        Spacer(Modifier.height(16.dp))
-        WordGuesserComponent(statusWordGuesser, expectedText,
-            onProgress = {
-                expectedText = lesson.getNewPhrase(it).phraseSpanish
-                statusWordGuesser = StatusWordGuesser.NEW
-                recognizedText = WAITING
+    if(progress == lesson.questions.size){
+        FinishLesson(lesson.id + 1,
+            onNextLesson = {
+                val lessonEntity = LessonRepository.getLesson(it)
+                if(lessonEntity !== null) {
+                    lessonEntity.randomizeQuestions()
+                    lesson = lessonEntity
+                    progress = 0
+                }
             }
         )
-        Spacer(Modifier.height(16.dp))
+        return
+    }
+
+    Column(Modifier.fillMaxSize().padding(16.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+        Spacer(Modifier.height(20.dp))
+        LessonProgressBar(percentualProgress)
+        Spacer(Modifier.height(20.dp))
+        Text("Lição ${lesson.id}")
+        Spacer(Modifier.height(10.dp))
+        Text("Pronuncie corretamente o texto abaixo em Espanhol:")
+        Spacer(Modifier.height(20.dp))
+        WordGuesserComponent(statusWordGuesser, expectedText)
+        Spacer(Modifier.height(20.dp))
         Text(recognizedText, style = MaterialTheme.typography.titleLarge)
-        Spacer(Modifier.height(16.dp))
-        Button(onClick = {
-            if (recordAudioPermissionState.status.isGranted) {
-                if (SpeechRecognizer.isRecognitionAvailable(context)) {
-                    startRecognition()
+        Spacer(Modifier.height(20.dp))
+
+        if(statusWordGuesser != StatusWordGuesser.DONE) {
+            Button(onClick = {
+                if (recordAudioPermissionState.status.isGranted) {
+                    if (SpeechRecognizer.isRecognitionAvailable(context)) {
+                        startRecognition()
+                    } else {
+                        recognizedText = "Reconhecimento de fala indisponível."
+                    }
                 } else {
-                    recognizedText = "Reconhecimento de fala indisponível."
+                    recordAudioPermissionState.launchPermissionRequest()
                 }
-            } else {
-                recordAudioPermissionState.launchPermissionRequest()
+            }) {
+                Text(buttonText)
             }
-        }) {
-            Text(buttonText)
+        } else{
+            NextQuestionButton(onProgress = {
+                expectedText = lesson.getNewPhrase(expectedText).phraseSpanish
+                statusWordGuesser = StatusWordGuesser.NEW
+                recognizedText = WAITING
+            })
+        }
+
+    }
+}
+
+@Composable
+fun NextQuestionButton(onProgress: () -> Unit) {
+    Row (
+        modifier = Modifier.fillMaxWidth()
+            .fillMaxHeight()
+            .padding(20.dp),
+        horizontalArrangement = Arrangement.End,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Button(
+            onClick = {
+                onProgress()
+            }
+        ) {
+            Text("Próxima Palavra")
         }
     }
 }
 
 @Composable
-fun LessonProgressBar(percentualProgress: Float) {
+fun FinishLesson(nextLesson: Int, onNextLesson: (Int) -> Unit) {
+    Box (
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        Card (
+            modifier = Modifier.fillMaxWidth()
+                .padding(20.dp)
+        ){
+            Column (
+                modifier = Modifier.fillMaxWidth()
+                    .padding(20.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ){
+                Text("Parabéns!!!",
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 20.sp
+                )
+                Text("Você concluiu 100% da sua lição!")
+                Button({
+                    onNextLesson(nextLesson)
+                }){
+                    Text("Iniciar lição $nextLesson")
+                }
+            }
+        }
+    }
 
+}
+
+@Composable
+fun LessonProgressBar(percentualProgress: Float) {
     LinearProgressIndicator(
         progress = { percentualProgress }, // Ex: 0.75f para 75%
         modifier = Modifier
@@ -163,15 +242,15 @@ fun checkIfGuessed(recognizedText: String, expectedText: String) : Boolean{
             ++guessedWords
     }
     val percentage = guessedWords / totalWords
-    return percentage > 0.6f
+    return percentage > 0.75f
 }
 
 @Composable
-fun WordGuesserComponent(status: StatusWordGuesser, expectedText: String, onProgress: (String) -> Unit) {
+fun WordGuesserComponent(status: StatusWordGuesser, expectedText: String) {
     val color = mapOf(
-        StatusWordGuesser.WRONG to Color.Red,
+        StatusWordGuesser.WRONG to MaterialTheme.colorScheme.error,
         StatusWordGuesser.DONE to Color.Green,
-    )[status]?: Color.DarkGray
+    )[status]?: MaterialTheme.colorScheme.onSurface
     Card(
         modifier = Modifier.fillMaxWidth()
             .padding(10.dp)
@@ -179,26 +258,18 @@ fun WordGuesserComponent(status: StatusWordGuesser, expectedText: String, onProg
         Text(expectedText,
             modifier = Modifier.fillMaxWidth()
                 .padding(10.dp),
-            style = MaterialTheme.typography.titleLarge,
+            fontSize = 22.sp,
+            lineHeight = 28.sp,
             textAlign = TextAlign.Center,
             color = color
         )
-        if(status == StatusWordGuesser.DONE){
-            Row (
-                modifier = Modifier.fillMaxWidth()
-                    .padding(20.dp),
-                horizontalArrangement = Arrangement.End
-            ) {
-                Button(
-                    onClick = {
-                        onProgress(expectedText)
-                    }
-                ) {
-                    Text("Próxima Palavra")
-                }
-            }
-        }
     }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun GreetingPreview() {
+    LessonScreen()
 }
 
 enum class StatusWordGuesser {
