@@ -30,6 +30,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewScreenSizes
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import io.github.cadnunsdimir.android.javierchopeklecciones.app.repository.LessonRepository
 import io.github.cadnunsdimir.android.javierchopeklecciones.ui.screen.LessonScreen
 import io.github.cadnunsdimir.android.javierchopeklecciones.ui.theme.JavierChopekLeccionesTheme
 
@@ -37,6 +38,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+        LessonRepository.preloadData(this)
         setContent {
             JavierChopekLeccionesTheme {
                 JavierChopekLeccionesApp()
@@ -45,11 +47,9 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-@PreviewScreenSizes
 @Composable
 fun JavierChopekLeccionesApp() {
     var currentDestination by rememberSaveable { mutableStateOf(AppDestinations.HOME) }
-
     NavigationSuiteScaffold(
         navigationSuiteItems = {
             AppDestinations.entries.forEach {

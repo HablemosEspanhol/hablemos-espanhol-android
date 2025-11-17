@@ -12,6 +12,10 @@ class SpeechRecognitionListener(
     private val onEndSpeech: () -> Unit
 ) : RecognitionListener {
 
+    companion object{
+        const val TAG = "SpeechRecognitionListener"
+    }
+
     override fun onResults(results: Bundle?) {
         val languageTag = results?.getString(
             RecognizerIntent.EXTRA_LANGUAGE
@@ -22,8 +26,8 @@ class SpeechRecognitionListener(
             RecognizerIntent.EXTRA_LANGUAGE_MODEL
         )
 
-        Log.d("SpeechRecognitionListener", "Idioma Recognizado (Tag): $languageTag")
-        Log.d("SpeechRecognitionListener", "Modelo de Idioma: $languageModel")
+        Log.d(TAG, "Idioma Recognizado (Tag): $languageTag")
+        Log.d(TAG, "Modelo de Idioma: $languageModel")
         val matches = results?.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)
         if (!matches.isNullOrEmpty()) {
             onResult(matches[0])
