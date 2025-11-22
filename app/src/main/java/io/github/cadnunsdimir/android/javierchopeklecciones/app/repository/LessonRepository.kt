@@ -20,15 +20,15 @@ class LessonRepository {
 
         @OptIn(DelicateCoroutinesApi::class)
         fun preloadData(ctx: Context) {
-//            try {
-//                val service = LessonRestClient()
-//                db = service.getLessonFromRemote()
-//            } catch (e: Exception) {
-//                print("erro ao carregar perguntas remotamente: "+e.message)
-//                db = LessonAssetReader.readCsvFromAssets(ctx, "offline_phrases.csv")
-//            }
+            try {
+                val service = LessonRestClient()
+                db = service.getLessonFromRemote()
+            } catch (e: Exception) {
+                print("erro ao carregar perguntas remotamente: "+e.message)
+                db = LessonAssetReader.readCsvFromAssets(ctx, "offline_phrases.csv")
+            }
 //            print(db.size)
-            db = LessonAssetReader.readCsvFromAssets(ctx, "offline_phrases.csv")
+//            db = LessonAssetReader.readCsvFromAssets(ctx, "offline_phrases.csv")
             print(db.size)
         }
     }
