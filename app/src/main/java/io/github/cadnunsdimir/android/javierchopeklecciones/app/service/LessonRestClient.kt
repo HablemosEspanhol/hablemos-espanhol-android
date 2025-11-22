@@ -9,28 +9,19 @@ import java.net.URL
 
 
 class LessonRestClient {
-//    val client: OkHttpClient = OkHttpClient()
     @Throws(IOException::class)
     fun getCsv(): String {
     try {
-        // 1. Cria o objeto URL
         val url = URL(DATABASE_URL)
-
-
-        // 2. Abre a conexão
         val connection = url.openConnection() as HttpURLConnection
-
-
-        // 3. Define o método da requisição (padrão é GET)
-        connection.setRequestMethod("GET")
+        connection.requestMethod = "GET"
         connection.setRequestProperty("Accept", "application/json")
 
         val responseCode = connection.getResponseCode()
-        println("Response Code: " + responseCode)
+        println("Response Code: $responseCode")
 
-        var responseString: String = ""
-        if (responseCode == HttpURLConnection.HTTP_OK) { // 200 OK
-            // 4. Lê a resposta usando um BufferedReader
+        var responseString = ""
+        if (responseCode == HttpURLConnection.HTTP_OK) {
             val `in` = BufferedReader(InputStreamReader(connection.getInputStream()))
             var inputLine: String?
             val response = StringBuilder()
@@ -39,9 +30,7 @@ class LessonRestClient {
                 response.append(inputLine+"\n")
             }
             `in`.close()
-
-            // 5. Exibe a resposta
-            println("Response Body: " + response.toString())
+            println("Response Body: $response")
             responseString = response.toString()
         } else {
             println("GET request failed")
@@ -49,13 +38,13 @@ class LessonRestClient {
         return responseString
     } catch (e: Exception) {
         e.printStackTrace()
-        throw  e;
+        throw  e
     }
 }
 
     fun getLessonFromRemote(): Map<Int, Lesson>{
         val data = getCsv()
-        return LessonAssetReader.transform(data.split("\n"));
+        return LessonAssetReader.transform(data.split("\n"))
     }
 
     companion object{

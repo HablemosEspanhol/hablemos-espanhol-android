@@ -8,9 +8,7 @@ import androidx.lifecycle.lifecycleScope
 import io.github.cadnunsdimir.android.javierchopeklecciones.app.repository.LessonRepository
 import io.github.cadnunsdimir.android.javierchopeklecciones.ui.JavierChopekLeccionesApp
 import io.github.cadnunsdimir.android.javierchopeklecciones.ui.theme.JavierChopekLeccionesTheme
-import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 

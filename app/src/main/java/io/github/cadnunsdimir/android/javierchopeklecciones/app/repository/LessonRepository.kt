@@ -2,12 +2,9 @@ package io.github.cadnunsdimir.android.javierchopeklecciones.app.repository
 
 import android.content.Context
 import io.github.cadnunsdimir.android.javierchopeklecciones.app.entity.Lesson
-import io.github.cadnunsdimir.android.javierchopeklecciones.app.entity.Question
 import io.github.cadnunsdimir.android.javierchopeklecciones.app.service.LessonAssetReader
 import io.github.cadnunsdimir.android.javierchopeklecciones.app.service.LessonRestClient
 import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 
 class LessonRepository {
     companion object {
