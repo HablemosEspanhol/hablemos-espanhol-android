@@ -19,7 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import io.github.cadnunsdimir.android.javierchopeklecciones.ui.screen.Greeting
+import io.github.cadnunsdimir.android.javierchopeklecciones.ui.screen.HomeScreen
 import io.github.cadnunsdimir.android.javierchopeklecciones.ui.screen.LessonScreen
 
 enum class AppDestinations(
@@ -58,7 +58,7 @@ fun JavierChopekLeccionesApp() {
 
         ) { innerPadding ->
             if(currentDestination.label == AppDestinations.HOME.label) {
-                Greeting(
+                HomeScreen(
                     modifier = Modifier.padding(innerPadding)
                 )
             }
