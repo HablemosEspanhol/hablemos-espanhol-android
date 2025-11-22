@@ -59,5 +59,7 @@ dependencies {
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
     implementation(libs.accompanist.permissions)
-    implementation("androidx.core:core-splashscreen:1.0.0")
+    implementation("androidx.core:core-splashscreen:1.2.0")
+//    implementation("com.squareup.okhttp3:okhttp:5.3.0")
+
 }

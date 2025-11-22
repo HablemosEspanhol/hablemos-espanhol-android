@@ -29,7 +29,7 @@ object LessonAssetReader {
         return transform(lines)
     }
 
-    private fun transform(csv: List<String>) : Map<Int, Lesson> {
+    fun transform(csv: List<String>) : Map<Int, Lesson> {
         val lessons = mutableMapOf<Int, Lesson>()
         csv.subList(1, csv.size - 1)
             .forEach {
