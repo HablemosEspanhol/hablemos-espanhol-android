@@ -1,6 +1,7 @@
 package io.github.cadnunsdimir.android.javierchopeklecciones
 
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -20,12 +21,28 @@ class MainActivity : ComponentActivity() {
 
         lifecycleScope.launch {
             withContext(Dispatchers.IO){
-                LessonRepository.preloadData(this@MainActivity)
+                try{
+                    LessonRepository.preloadData(this@MainActivity)
+                } catch (e: Exception) {
+                    showErrorToUserOnMainThread(e)
+                }
             }
         }
         setContent {
             JavierChopekLeccionesTheme {
                 JavierChopekLeccionesApp()
+            }
+        }
+    }
+
+    private fun showErrorToUserOnMainThread(e: Exception) {
+        lifecycleScope.launch {
+            withContext(Dispatchers.Main){
+                Toast.makeText(
+                    this@MainActivity,
+                    e.message,
+                    Toast.LENGTH_LONG)
+                    .show()
             }
         }
     }

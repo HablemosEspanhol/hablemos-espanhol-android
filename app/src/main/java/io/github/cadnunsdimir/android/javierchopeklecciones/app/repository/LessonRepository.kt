@@ -24,9 +24,6 @@ class LessonRepository {
                 print("erro ao carregar perguntas remotamente: "+e.message)
                 db = LessonAssetReader.readCsvFromAssets(ctx, "offline_phrases.csv")
             }
-//            print(db.size)
-//            db = LessonAssetReader.readCsvFromAssets(ctx, "offline_phrases.csv")
-            print(db.size)
         }
     }
 }
