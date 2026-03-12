@@ -12,7 +12,9 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_click_habla"
         android:supportsRtl="true"
-        android:theme="@style/Theme.JavierChopekLecciones">
+        android:theme="@style/Theme.JavierChopekLecciones"
+        android:usesCleartextTraffic="true">
+
         <activity
             android:name=".MainActivity"
             android:exported="true"

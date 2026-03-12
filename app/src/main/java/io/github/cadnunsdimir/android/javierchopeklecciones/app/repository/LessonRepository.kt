@@ -2,11 +2,14 @@ package io.github.cadnunsdimir.android.javierchopeklecciones.app.repository
 
 import android.content.Context
 import io.github.cadnunsdimir.android.javierchopeklecciones.app.entity.Lesson
+import io.github.cadnunsdimir.android.javierchopeklecciones.app.service.BaseLessonRestClient
 import io.github.cadnunsdimir.android.javierchopeklecciones.app.service.LessonAssetReader
-import io.github.cadnunsdimir.android.javierchopeklecciones.app.service.LessonRestClient
+import io.github.cadnunsdimir.android.javierchopeklecciones.app.service.NotificationService
+import io.github.cadnunsdimir.android.javierchopeklecciones.app.service.SpreadSheetLessonRestClient
 import kotlinx.coroutines.DelicateCoroutinesApi
 
-class LessonRepository {
+class LessonRepository() {
+
     companion object {
         private var db: Map <Int, Lesson> = mapOf<Int, Lesson>()
 
@@ -18,10 +21,11 @@ class LessonRepository {
         @OptIn(DelicateCoroutinesApi::class)
         fun preloadData(ctx: Context) {
             try {
-                val service = LessonRestClient()
+                val service = BaseLessonRestClient.getInstance();
                 db = service.getLessonFromRemote()
+                NotificationService.notify("Aplicação rodando on-line!")
             } catch (e: Exception) {
-                print("erro ao carregar perguntas remotamente: "+e.message)
+                NotificationService.notify("erro ao carregar perguntas remotamente: "+e.message)
                 db = LessonAssetReader.readCsvFromAssets(ctx, "offline_phrases.csv")
             }
         }

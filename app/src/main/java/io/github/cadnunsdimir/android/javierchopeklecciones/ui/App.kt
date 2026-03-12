@@ -1,5 +1,6 @@
 package io.github.cadnunsdimir.android.javierchopeklecciones.ui
 
+import android.widget.Toast
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
@@ -17,10 +18,16 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import io.github.cadnunsdimir.android.javierchopeklecciones.app.service.LoginService
+import io.github.cadnunsdimir.android.javierchopeklecciones.app.service.NotificationService
 import io.github.cadnunsdimir.android.javierchopeklecciones.ui.screen.HomeScreen
 import io.github.cadnunsdimir.android.javierchopeklecciones.ui.screen.LessonScreen
+import io.github.cadnunsdimir.android.javierchopeklecciones.ui.screen.LoginScreen
+import io.github.cadnunsdimir.android.javierchopeklecciones.ui.screen.ProfileScreen
+import kotlin.coroutines.coroutineContext
 
 enum class AppDestinations(
     val label: String,
@@ -35,6 +42,11 @@ enum class AppDestinations(
 @Composable
 fun JavierChopekLeccionesApp() {
     var currentDestination by rememberSaveable { mutableStateOf(AppDestinations.HOME) }
+    val loginService = LoginService()
+    val context = LocalContext.current
+
+
+
     NavigationSuiteScaffold(
         navigationSuiteItems = {
             AppDestinations.entries.forEach {
@@ -57,14 +69,17 @@ fun JavierChopekLeccionesApp() {
                 .padding(20.dp)
 
         ) { innerPadding ->
-            if(currentDestination.label == AppDestinations.HOME.label) {
-                HomeScreen(
+
+            when(currentDestination) {
+                AppDestinations.HOME -> HomeScreen(
                     modifier = Modifier.padding(innerPadding)
                 )
-            }
-
-            if(currentDestination.label == AppDestinations.EXERCISES.label) {
-                LessonScreen()
+                AppDestinations.EXERCISES -> LessonScreen()
+                AppDestinations.PROFILE -> if (loginService.isLogged()){
+                    ProfileScreen()
+                } else {
+                    LoginScreen()
+                }
             }
         }
     }

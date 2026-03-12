@@ -7,6 +7,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.lifecycle.lifecycleScope
 import io.github.cadnunsdimir.android.javierchopeklecciones.app.repository.LessonRepository
+import io.github.cadnunsdimir.android.javierchopeklecciones.app.service.NotificationService
 import io.github.cadnunsdimir.android.javierchopeklecciones.ui.JavierChopekLeccionesApp
 import io.github.cadnunsdimir.android.javierchopeklecciones.ui.theme.JavierChopekLeccionesTheme
 import kotlinx.coroutines.Dispatchers
@@ -18,13 +19,16 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+        NotificationService.subscribe {
+            showErrorToUserOnMainThread(it)
+        }
 
         lifecycleScope.launch {
             withContext(Dispatchers.IO){
                 try{
                     LessonRepository.preloadData(this@MainActivity)
                 } catch (e: Exception) {
-                    showErrorToUserOnMainThread(e)
+                    showErrorToUserOnMainThread(e.message?:"Erro desconhecido")
                 }
             }
         }
@@ -35,12 +39,12 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    private fun showErrorToUserOnMainThread(e: Exception) {
+    private fun showErrorToUserOnMainThread(message: String) {
         lifecycleScope.launch {
             withContext(Dispatchers.Main){
                 Toast.makeText(
                     this@MainActivity,
-                    e.message,
+                    message,
                     Toast.LENGTH_LONG)
                     .show()
             }
