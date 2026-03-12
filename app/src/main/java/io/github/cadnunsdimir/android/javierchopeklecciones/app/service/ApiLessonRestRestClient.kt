@@ -10,8 +10,16 @@ class ApiLessonRestRestClient: BaseLessonRestClient() {
         val totalLessons = 10
         val lessons = mutableMapOf<Int, Lesson>()
         for (id in 1..totalLessons){
-            val lesson = getLesson(id);
-            lessons.put(id, lesson);
+            var success = false
+            while (!success) {
+                try {
+                    val lesson = getLesson(id)
+                    lessons.put(id, lesson)
+                    success = true
+                } catch (ex: Exception) {
+                    NotificationService.notify("Erro ao carregar Lição $id: ${ex.message}");
+                }
+            }
         }
         return lessons
     }

@@ -10,6 +10,7 @@ object NotificationService {
     }
 
     fun notify(message: String) {
+        print("NotificationService: $message")
         _subscriptions.forEach { subscription -> subscription.callback.invoke(message) }
     }
 }

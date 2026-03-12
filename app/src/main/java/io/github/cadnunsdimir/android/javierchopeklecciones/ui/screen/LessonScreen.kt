@@ -41,17 +41,20 @@ import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
 import io.github.cadnunsdimir.android.javierchopeklecciones.app.entity.Lesson
 import io.github.cadnunsdimir.android.javierchopeklecciones.app.repository.LessonRepository
+import io.github.cadnunsdimir.android.javierchopeklecciones.app.repository.ProgressRepository
 import io.github.cadnunsdimir.android.javierchopeklecciones.app.service.SpeechRecognitionListener
 import java.text.Normalizer
 
 const val WAITING = "Aguardando..."
 const val RECORD = "Gravar Pronúncia"
 
-@OptIn(ExperimentalPermissionsApi::class)
+
 @Composable
 fun LessonScreen() {
     val context = LocalContext.current
-    val lessonEntity = LessonRepository.getLesson(1) as Lesson
+    val lessonEntity = LessonRepository.getLesson(ProgressRepository.getNextLesson()) as Lesson
+    var lessonScore = 20
+    val penalty = 1
     lessonEntity.randomizeQuestions()
     var lesson by remember { mutableStateOf(lessonEntity) }
     var recognizedText by remember { mutableStateOf(WAITING) }
@@ -61,10 +64,6 @@ fun LessonScreen() {
     var statusWordGuesser by remember { mutableStateOf(StatusWordGuesser.NEW) }
     var percentualProgress by remember { mutableFloatStateOf(0f) }
     var progress by remember { mutableIntStateOf(0) }
-
-    val recordAudioPermissionState = rememberPermissionState(
-        Manifest.permission.RECORD_AUDIO
-    )
 
     val startRecognition = {
         val listener = SpeechRecognitionListener(
@@ -78,6 +77,8 @@ fun LessonScreen() {
                 if(haveGuessed) {
                     progress += 1
                     percentualProgress = progress.toFloat() / lesson.questions.size
+                } else if(lessonScore > 10){
+                    lessonScore -= penalty
                 }
                 speechRecognizer.destroy()
             },
@@ -108,13 +109,16 @@ fun LessonScreen() {
     }
 
     if(progress == lesson.questions.size){
-        FinishLesson(lesson.id + 1,
+        FinishLesson(lesson.id + 1, lessonScore,
             onNextLesson = {
+                ProgressRepository.saveCompletedLesson(lesson.id, lessonScore)
                 val lessonEntity = LessonRepository.getLesson(it)
                 if(lessonEntity !== null) {
                     lessonEntity.randomizeQuestions()
                     lesson = lessonEntity
                     progress = 0
+                    lessonScore = 20
+                    percentualProgress = 0f
                 }
             }
         )
@@ -135,19 +139,9 @@ fun LessonScreen() {
         Spacer(Modifier.height(20.dp))
 
         if(statusWordGuesser != StatusWordGuesser.DONE) {
-            Button(onClick = {
-                if (recordAudioPermissionState.status.isGranted) {
-                    if (SpeechRecognizer.isRecognitionAvailable(context)) {
-                        startRecognition()
-                    } else {
-                        recognizedText = "Reconhecimento de fala indisponível."
-                    }
-                } else {
-                    recordAudioPermissionState.launchPermissionRequest()
-                }
-            }) {
-                Text(buttonText)
-            }
+            RecordAudioButton(buttonText,
+                { startRecognition() },
+                {recognizedText = it})
         } else{
             NextQuestionButton(onProgress = {
                 expectedText = lesson.getNewPhrase(expectedText).phraseSpanish
@@ -178,8 +172,29 @@ fun NextQuestionButton(onProgress: () -> Unit) {
     }
 }
 
+@OptIn(ExperimentalPermissionsApi::class)
 @Composable
-fun FinishLesson(nextLesson: Int, onNextLesson: (Int) -> Unit) {
+fun RecordAudioButton(buttonText: String, onStartRecognition: ()-> Unit, onError: (text: String)-> Unit) {
+    val recordAudioPermissionState = rememberPermissionState(
+        Manifest.permission.RECORD_AUDIO
+    )
+    val ctx = LocalContext.current
+    Button(onClick = {
+        if (recordAudioPermissionState.status.isGranted) {
+            if (SpeechRecognizer.isRecognitionAvailable(ctx)) {
+                onStartRecognition()
+            } else {
+                onError("Reconhecimento de fala indisponível.")
+            }
+        } else {
+            recordAudioPermissionState.launchPermissionRequest()
+        }
+    }) {
+        Text(buttonText)
+    }
+}
+@Composable
+fun FinishLesson(nextLesson: Int, score: Int, onNextLesson: (Int) -> Unit) {
     Box (
         modifier = Modifier
             .fillMaxSize()
@@ -200,6 +215,7 @@ fun FinishLesson(nextLesson: Int, onNextLesson: (Int) -> Unit) {
                     fontSize = 20.sp
                 )
                 Text("Você concluiu 100% da sua lição!")
+                Text("Score: $score")
                 Button({
                     onNextLesson(nextLesson)
                 }){
@@ -210,7 +226,6 @@ fun FinishLesson(nextLesson: Int, onNextLesson: (Int) -> Unit) {
     }
 
 }
-
 @Composable
 fun LessonProgressBar(percentualProgress: Float) {
     LinearProgressIndicator(
