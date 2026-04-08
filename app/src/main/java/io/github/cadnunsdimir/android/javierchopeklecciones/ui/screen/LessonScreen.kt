@@ -43,6 +43,10 @@ import io.github.cadnunsdimir.android.javierchopeklecciones.app.entity.Lesson
 import io.github.cadnunsdimir.android.javierchopeklecciones.app.repository.LessonRepository
 import io.github.cadnunsdimir.android.javierchopeklecciones.app.repository.ProgressRepository
 import io.github.cadnunsdimir.android.javierchopeklecciones.app.service.SpeechRecognitionListener
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import java.text.Normalizer
 
 const val WAITING = "Aguardando..."
@@ -52,7 +56,10 @@ const val RECORD = "Gravar Pronúncia"
 @Composable
 fun LessonScreen() {
     val context = LocalContext.current
-    val lessonEntity = LessonRepository.getLesson(ProgressRepository.getNextLesson()) as Lesson
+    val lessonEntity: Lesson
+    runBlocking{
+        lessonEntity = LessonRepository.getLesson(ProgressRepository.getNextLesson()) as Lesson
+    }
     var lessonScore = 20
     val penalty = 1
     lessonEntity.randomizeQuestions()
@@ -112,7 +119,10 @@ fun LessonScreen() {
         FinishLesson(lesson.id + 1, lessonScore,
             onNextLesson = {
                 ProgressRepository.saveCompletedLesson(lesson.id, lessonScore)
-                val lessonEntity = LessonRepository.getLesson(it)
+                val lessonEntity: Lesson?
+                runBlocking{
+                    lessonEntity = LessonRepository.getLesson(ProgressRepository.getNextLesson())
+                }
                 if(lessonEntity !== null) {
                     lessonEntity.randomizeQuestions()
                     lesson = lessonEntity

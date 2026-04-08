@@ -36,6 +36,6 @@ class ApiLessonRestRestClient: BaseLessonRestClient() {
                 obj.getString("back")
             )
         }
-        return Lesson(id, questions)
+        return Lesson(id, "title", questions)
     }
 }

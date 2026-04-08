@@ -39,7 +39,7 @@ object LessonAssetReader {
                 val lessonId = dataset[0].toInt()
                 var lesson = lessons[lessonId]
                 if(lesson == null) {
-                    lesson = Lesson(lessonId, listOf())
+                    lesson = Lesson(lessonId, "title", listOf())
                     lessons[lessonId] = lesson
                 }
                 val question = Question(
