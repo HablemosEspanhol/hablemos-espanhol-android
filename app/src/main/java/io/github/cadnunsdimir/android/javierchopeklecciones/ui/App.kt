@@ -45,8 +45,6 @@ fun JavierChopekLeccionesApp() {
     val loginService = LoginService()
     val context = LocalContext.current
 
-
-
     NavigationSuiteScaffold(
         navigationSuiteItems = {
             AppDestinations.entries.forEach {
