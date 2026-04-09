@@ -20,7 +20,7 @@ fun FillBlankExercise(question: String, answer: String, viewModel: LessonViewMod
         value = answer,
         onValueChange = { viewModel.onAnswer(it) },
         singleLine = true,
-        modifier = Modifier.width(40.dp)
+        modifier = Modifier.width(80.dp)
     )
     Spacer(Modifier.Companion.height(20.dp))
 }
