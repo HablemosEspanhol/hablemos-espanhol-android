@@ -51,6 +51,9 @@ dependencies {
     implementation(libs.androidx.compose.material.icons.extended)
     implementation(libs.androidx.datastore.preferences)
     implementation(libs.androidx.navigation.runtime.ktx)
+    implementation(libs.retrofit)
+    implementation(libs.converter.gson)
+    implementation(libs.kotlinx.coroutines.android)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -63,6 +66,4 @@ dependencies {
     implementation (libs.androidx.room.runtime)
     annotationProcessor (libs.androidx.room.compiler)
     implementation (libs.androidx.room.ktx)
-//    implementation("com.squareup.okhttp3:okhttp:5.3.0")
-
 }
