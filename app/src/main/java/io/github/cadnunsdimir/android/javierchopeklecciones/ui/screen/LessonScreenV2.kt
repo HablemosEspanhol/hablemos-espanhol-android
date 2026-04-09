@@ -93,7 +93,8 @@ fun LessonScreenV2(viewModel: LessonViewModel = viewModel(), loginViewModel: Log
     }
 
     if(lesson.completedLesson){
-        loginViewModel.updateProficiencyLevel(lesson.level)
+        loginViewModel.updateProficiencyLevelAndScore(lesson.level, lesson.score)
+
         FinishLesson(
             score = lesson.score,
             message = lesson.message,

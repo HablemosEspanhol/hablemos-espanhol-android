@@ -22,6 +22,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import io.github.cadnunsdimir.android.javierchopeklecciones.ui.screen.HomeScreen
+import io.github.cadnunsdimir.android.javierchopeklecciones.ui.screen.LessonScreen
 import io.github.cadnunsdimir.android.javierchopeklecciones.ui.screen.LessonScreenV2
 import io.github.cadnunsdimir.android.javierchopeklecciones.ui.screen.LoginScreen
 import io.github.cadnunsdimir.android.javierchopeklecciones.ui.screen.ProfileScreen
@@ -33,7 +34,8 @@ enum class AppDestinations(
     val showLogged: Boolean? = null
 ) {
     HOME("Inicio", Icons.Default.Home),
-    EXERCISES("Ejercícios", Icons.Default.Create, true),
+    EXERCISES_V1("Ejercícios (offline)", Icons.Default.Create, true),
+    EXERCISES_V2("Ejercícios", Icons.Default.Create, true),
     PROFILE("Perfil", Icons.Default.AccountBox, true),
     LOGIN("Login", Icons.Default.AccountBox, false),
 }
@@ -43,6 +45,7 @@ enum class AppDestinations(
 fun JavierChopekLeccionesApp(loginViewModel: LoginUiViewModel = viewModel()) {
     var currentDestination by rememberSaveable { mutableStateOf(AppDestinations.HOME) }
     val isLogged = loginViewModel.isLogged().collectAsState(false)
+    loginViewModel.loadUserStats()
 
     NavigationSuiteScaffold(
         navigationSuiteItems = {
@@ -75,9 +78,8 @@ fun JavierChopekLeccionesApp(loginViewModel: LoginUiViewModel = viewModel()) {
                 AppDestinations.HOME -> HomeScreen(
                     innerPadding
                 )
-                //decrecated
-//                AppDestinations.EXERCISES -> LessonScreen()
-                AppDestinations.EXERCISES -> LessonScreenV2(loginViewModel = loginViewModel)
+                AppDestinations.EXERCISES_V1 -> LessonScreen()
+                AppDestinations.EXERCISES_V2 -> LessonScreenV2(loginViewModel = loginViewModel)
                 AppDestinations.PROFILE -> ProfileScreen(innerPadding, loginViewModel)
                 AppDestinations.LOGIN -> LoginScreen(innerPadding, loginViewModel,
                     onLoginSuccess = {

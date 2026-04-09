@@ -1,7 +1,6 @@
 package io.github.cadnunsdimir.android.javierchopeklecciones.ui.viewmodel
 
 import android.app.Application
-import android.content.Context
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.lifecycle.AndroidViewModel
@@ -22,7 +21,8 @@ enum class FormField {
 }
 
 class LoginUiViewModel (application: Application): AndroidViewModel(application) {
-
+    private val PROFICIENCY_LEVEL = "proficiency_level"
+    private val SCORE = "score"
     private val context = getApplication<Application>()
     private val _uiState = MutableStateFlow(LoginState())
     val uiState: StateFlow<LoginState> = _uiState.asStateFlow()
@@ -46,7 +46,7 @@ class LoginUiViewModel (application: Application): AndroidViewModel(application)
         return !isError(FormField.LOGIN) &&
                 !isError(FormField.PASSWORD)
     }
-    suspend fun saveUserName(context: Context, name: String) {
+    suspend fun saveUserName(name: String) {
         val key = stringPreferencesKey("user_name")
 
         context.dataStore.edit { prefs ->
@@ -54,17 +54,21 @@ class LoginUiViewModel (application: Application): AndroidViewModel(application)
         }
     }
 
-    fun getUserName(context: Context): Flow<String?> {
-        val key = stringPreferencesKey("user_name")
+    fun getUserName(): Flow<String?> {
+        return getUserPreferencies("user_name")
+    }
 
+    private fun getUserPreferencies(keyAsString: String): Flow<String?>{
         return context.dataStore.data.map { prefs ->
-            prefs[key]
+            prefs[
+                stringPreferencesKey(keyAsString)
+            ]
         }
     }
 
     fun login(): Boolean {
         viewModelScope.launch(Dispatchers.IO) {
-            saveUserName(context, _uiState.value.login)
+            saveUserName(_uiState.value.login)
         }
 
         return true
@@ -72,28 +76,47 @@ class LoginUiViewModel (application: Application): AndroidViewModel(application)
 
     fun logout() {
         viewModelScope.launch(Dispatchers.IO) {
-            saveUserName(context, "")
+            saveUserName("")
         }
     }
 
     fun isLogged() : Flow<Boolean>{
-        return getUserName(context).map {
+        return getUserName().map {
             if (!it.isNullOrBlank())
                 _uiState.value = _uiState.value.copy(login = it)
             return@map !it.isNullOrBlank()
         }
     }
 
-    fun updateProficiencyLevel(level: String) {
-        val key = stringPreferencesKey("proficiency_level")
+    fun loadUserStats() {
+        viewModelScope.launch {
+            getUserPreferencies(PROFICIENCY_LEVEL).collect {
+                _uiState.value = _uiState.value.copy(
+                    proficiencyLevel = it ?: _uiState.value.proficiencyLevel
+                )
+            }
 
+            getUserPreferencies(SCORE).collect {
+                _uiState.value = _uiState.value.copy(
+                    score = if(!it.isNullOrBlank()) it.toInt() else _uiState.value.score
+                )
+            }
+        }
+    }
+
+    fun updateProficiencyLevelAndScore(level: String, score: Int) {
+        val totalScore = _uiState.value.score + score
         viewModelScope.launch {
             context.dataStore.edit { prefs ->
-                prefs[key] = level
+                prefs[stringPreferencesKey(PROFICIENCY_LEVEL)] = level
+                prefs[stringPreferencesKey(SCORE)] = totalScore.toString()
             }
         }
 
-        _uiState.value = _uiState.value.copy(proficiencyLevel = level)
+        _uiState.value = _uiState.value.copy(
+            proficiencyLevel = level,
+            score = totalScore
+        )
     }
 }
 

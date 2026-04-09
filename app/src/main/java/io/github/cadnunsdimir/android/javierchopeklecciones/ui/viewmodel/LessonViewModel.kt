@@ -14,7 +14,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class LessonViewModel(application: Application): AndroidViewModel(application) {
-    private val context = getApplication<Application>()
     var restClient =  ApiLessonRestClientV2()
     private val _exercises = MutableStateFlow<List<ExerciseApiResponse>>(emptyList())
     val exercises: StateFlow<List<ExerciseApiResponse>> = _exercises
