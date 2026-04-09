@@ -22,7 +22,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import io.github.cadnunsdimir.android.javierchopeklecciones.ui.screen.HomeScreen
-import io.github.cadnunsdimir.android.javierchopeklecciones.ui.screen.LessonScreen
+import io.github.cadnunsdimir.android.javierchopeklecciones.ui.screen.LessonScreenV2
 import io.github.cadnunsdimir.android.javierchopeklecciones.ui.screen.LoginScreen
 import io.github.cadnunsdimir.android.javierchopeklecciones.ui.screen.ProfileScreen
 import io.github.cadnunsdimir.android.javierchopeklecciones.ui.viewmodel.LoginUiViewModel
@@ -75,7 +75,9 @@ fun JavierChopekLeccionesApp(loginViewModel: LoginUiViewModel = viewModel()) {
                 AppDestinations.HOME -> HomeScreen(
                     innerPadding
                 )
-                AppDestinations.EXERCISES -> LessonScreen()
+                //decrecated
+//                AppDestinations.EXERCISES -> LessonScreen()
+                AppDestinations.EXERCISES -> LessonScreenV2(loginViewModel = loginViewModel)
                 AppDestinations.PROFILE -> ProfileScreen(innerPadding, loginViewModel)
                 AppDestinations.LOGIN -> LoginScreen(innerPadding, loginViewModel,
                     onLoginSuccess = {

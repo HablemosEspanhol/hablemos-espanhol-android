@@ -46,20 +46,19 @@ class LoginUiViewModel (application: Application): AndroidViewModel(application)
         return !isError(FormField.LOGIN) &&
                 !isError(FormField.PASSWORD)
     }
+    suspend fun saveUserName(context: Context, name: String) {
+        val key = stringPreferencesKey("user_name")
+
+        context.dataStore.edit { prefs ->
+            prefs[key] = name
+        }
+    }
 
     fun getUserName(context: Context): Flow<String?> {
         val key = stringPreferencesKey("user_name")
 
         return context.dataStore.data.map { prefs ->
             prefs[key]
-        }
-    }
-
-    suspend fun saveUserName(context: Context, name: String) {
-        val key = stringPreferencesKey("user_name")
-
-        context.dataStore.edit { prefs ->
-            prefs[key] = name
         }
     }
 
@@ -85,3 +84,4 @@ class LoginUiViewModel (application: Application): AndroidViewModel(application)
         }
     }
 }
+
