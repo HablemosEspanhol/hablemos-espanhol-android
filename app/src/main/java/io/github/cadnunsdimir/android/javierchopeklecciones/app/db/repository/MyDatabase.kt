@@ -14,6 +14,7 @@ import io.github.cadnunsdimir.android.javierchopeklecciones.app.service.Notifica
 @Database(entities = [Lesson::class, Question::class, MyProgress::class], version = 1)
 abstract class MyDatabase: RoomDatabase() {
     abstract fun lessonRepository(): LessonRepository
+    abstract fun questionRepository(): QuestionRepository
     abstract fun progressRepository(): ProgressRepository
 }
 
@@ -23,7 +24,7 @@ object DatabaseProvider {
 
     fun getDatabase(context: Context): MyDatabase {
         return INSTANCE ?: synchronized(this) {
-            val instance =Room.databaseBuilder(
+            val instance = Room.databaseBuilder(
                 context,
                 MyDatabase::class.java,
                 "my_database"
@@ -36,12 +37,29 @@ object DatabaseProvider {
 
     fun preloadData(ctx: Context) {
         try {
-            var db = getDatabase(ctx)
+
+            val db = getDatabase(ctx)
             val service = BaseLessonRestClient.getInstance()
             val repository = db.lessonRepository()
-            val data = service.getLessonFromRemote()
-            repository.insertAll(data.values.toList())
-            NotificationService.notify("Aplicação rodando on-line!")
+            val questionRepository = db.questionRepository()
+            if (repository.count() == 0 || questionRepository.count() == 0) {
+                val data = service.getLessonFromRemote()
+
+                repository.deleteAll()
+                questionRepository.deleteAll()
+
+                val lessons = data.values.map { it.lesson }
+                repository.insertAll(lessons)
+
+                val questions = data.values.flatMap { it.questions }
+                    .mapIndexed { index, question -> Question (
+                        index + 1,
+                        lessonId = question.lessonId,
+                        phraseSpanish = question.phraseSpanish,
+                        phrasePortuguese = question.phrasePortuguese
+                    ) }
+                questionRepository.insertAll(questions)
+            }
         } catch (e: Exception) {
             NotificationService.notify("erro ao carregar perguntas remotamente: "+e.message)
         }

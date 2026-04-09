@@ -6,6 +6,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.lifecycle.lifecycleScope
+import io.github.cadnunsdimir.android.javierchopeklecciones.app.db.repository.DatabaseProvider
 import io.github.cadnunsdimir.android.javierchopeklecciones.app.service.NotificationService
 import io.github.cadnunsdimir.android.javierchopeklecciones.ui.JavierChopekLeccionesApp
 import io.github.cadnunsdimir.android.javierchopeklecciones.ui.theme.JavierChopekLeccionesTheme
@@ -22,15 +23,15 @@ class MainActivity : ComponentActivity() {
             showErrorToUserOnMainThread(it)
         }
 
-//        lifecycleScope.launch {
-//            withContext(Dispatchers.IO){
-//                try{
-//                    DatabaseProvider.preloadData(this@MainActivity)
-//                } catch (e: Exception) {
-//                    showErrorToUserOnMainThread(e.message?:"Erro desconhecido")
-//                }
-//            }
-//        }
+        lifecycleScope.launch {
+            withContext(Dispatchers.IO){
+                try{
+                    DatabaseProvider.preloadData(this@MainActivity)
+                } catch (e: Exception) {
+                    showErrorToUserOnMainThread(e.message?:"Erro desconhecido")
+                }
+            }
+        }
 
         setContent {
             JavierChopekLeccionesTheme {

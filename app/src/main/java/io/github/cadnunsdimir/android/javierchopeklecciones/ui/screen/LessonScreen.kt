@@ -21,9 +21,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import io.github.cadnunsdimir.android.javierchopeklecciones.app.db.entity.Lesson
+import io.github.cadnunsdimir.android.javierchopeklecciones.app.db.entity.LessonWithQuestions
 import io.github.cadnunsdimir.android.javierchopeklecciones.app.db.repository.DatabaseProvider
-import io.github.cadnunsdimir.android.javierchopeklecciones.app.db.repository.ProgressRepository
 import io.github.cadnunsdimir.android.javierchopeklecciones.app.service.SpeechRecognitionListener
 import io.github.cadnunsdimir.android.javierchopeklecciones.ui.components.FinishLesson
 import io.github.cadnunsdimir.android.javierchopeklecciones.ui.components.LessonProgressBar
@@ -42,9 +41,10 @@ fun LessonScreen() {
     val context = LocalContext.current
     val db = DatabaseProvider.getDatabase(context)
     val repository = db.lessonRepository()
-    val lessonEntity: Lesson
+    val lessonEntity: LessonWithQuestions
+    var lessonId = 1
     runBlocking{
-        lessonEntity = repository.getOne(ProgressRepository.getNextLesson())
+        lessonEntity = repository.getOne(lessonId)
     }
     var lessonScore = 20
     val penalty = 1
@@ -103,13 +103,13 @@ fun LessonScreen() {
 
     if(progress == lesson.questions.size){
         FinishLesson(
-            nextLesson = lesson.id + 1,
+            nextLesson = lesson.lesson.id + 1,
             score = lessonScore,
-            onNextLesson = {
-                ProgressRepository.saveCompletedLesson(lesson.id, lessonScore)
-                val lessonEntity: Lesson?
+            onNextLesson = { nextLesson ->
+//                ProgressRepository.saveCompletedLesson(lesson.lesson.id, lessonScore)
+                val lessonEntity: LessonWithQuestions?
                 runBlocking{
-                    lessonEntity = repository.getOne(ProgressRepository.getNextLesson())
+                    lessonEntity = repository.getOne(nextLesson)
                 }
                 if(lessonEntity !== null) {
                     lessonEntity.randomizeQuestions()
@@ -127,7 +127,7 @@ fun LessonScreen() {
         Spacer(Modifier.height(20.dp))
         LessonProgressBar(percentualProgress)
         Spacer(Modifier.height(20.dp))
-        Text("Lição ${lesson.id}")
+        Text("Lição ${lesson.lesson.id}")
         Spacer(Modifier.height(10.dp))
         Text("Pronuncie corretamente o texto abaixo em Espanhol:")
         Spacer(Modifier.height(20.dp))

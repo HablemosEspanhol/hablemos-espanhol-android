@@ -17,6 +17,7 @@ retrofit = "3.0.0"
 roomRuntime = "2.8.4"
 lifecycleViewmodelCompose = "2.10.0"
 navigationRuntimeKtx = "2.9.7"
+ksp = "2.3.6"
 
 [libraries]
 accompanist-permissions = { module = "com.google.accompanist:accompanist-permissions", version.ref = "accompanistPermissions" }
@@ -50,4 +51,4 @@ retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
-
+ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }

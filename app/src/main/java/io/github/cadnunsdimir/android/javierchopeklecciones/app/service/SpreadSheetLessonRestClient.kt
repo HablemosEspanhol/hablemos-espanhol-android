@@ -1,10 +1,11 @@
 package io.github.cadnunsdimir.android.javierchopeklecciones.app.service
 
 import io.github.cadnunsdimir.android.javierchopeklecciones.app.db.entity.Lesson
+import io.github.cadnunsdimir.android.javierchopeklecciones.app.db.entity.LessonWithQuestions
 
 
 class SpreadSheetLessonRestClient : BaseLessonRestClient() {
-    override fun getLessonFromRemote(): Map<Int, Lesson>{
+    override fun getLessonFromRemote(): Map<Int, LessonWithQuestions>{
         val data = get(DATABASE_URL)
         return LessonAssetReader.transform(data.split("\n"))
     }

@@ -17,7 +17,7 @@ import androidx.compose.ui.unit.sp
 import io.github.cadnunsdimir.android.javierchopeklecciones.ui.viewmodel.LoginUiViewModel
 
 @Composable
-fun ProfileScreen(innerPadding: PaddingValues, loginViewModel: LoginUiViewModel) {
+fun ProfileScreen(innerPadding: PaddingValues, loginViewModel: LoginUiViewModel, onLogoutSuccess: ()-> Unit) {
     val loggedUser = loginViewModel.uiState.collectAsState().value
     Column {
         Spacer(
@@ -40,6 +40,7 @@ fun ProfileScreen(innerPadding: PaddingValues, loginViewModel: LoginUiViewModel)
             modifier = Modifier.fillMaxWidth())
         Button({
             loginViewModel.logout()
+            onLogoutSuccess()
         }) {
             Text("Logout")
         }

@@ -34,7 +34,7 @@ enum class AppDestinations(
     val showLogged: Boolean? = null
 ) {
     HOME("Inicio", Icons.Default.Home),
-    EXERCISES_V1("Ejercícios (offline)", Icons.Default.Create, true),
+    EXERCISES_V1("Ejercícios (offline)", Icons.Default.Create, false),
     EXERCISES_V2("Ejercícios", Icons.Default.Create, true),
     PROFILE("Perfil", Icons.Default.AccountBox, true),
     LOGIN("Login", Icons.Default.AccountBox, false),
@@ -80,11 +80,12 @@ fun JavierChopekLeccionesApp(loginViewModel: LoginUiViewModel = viewModel()) {
                 )
                 AppDestinations.EXERCISES_V1 -> LessonScreen()
                 AppDestinations.EXERCISES_V2 -> LessonScreenV2(loginViewModel = loginViewModel)
-                AppDestinations.PROFILE -> ProfileScreen(innerPadding, loginViewModel)
-                AppDestinations.LOGIN -> LoginScreen(innerPadding, loginViewModel,
-                    onLoginSuccess = {
-                        currentDestination = AppDestinations.PROFILE
-                    })
+                AppDestinations.PROFILE -> ProfileScreen(innerPadding, loginViewModel) {
+                    currentDestination = AppDestinations.PROFILE
+                }
+                AppDestinations.LOGIN -> LoginScreen(innerPadding, loginViewModel){
+                    currentDestination = AppDestinations.HOME
+                }
             }
 
         }
