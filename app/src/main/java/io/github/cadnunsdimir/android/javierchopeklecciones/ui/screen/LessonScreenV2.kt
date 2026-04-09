@@ -14,6 +14,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import io.github.cadnunsdimir.android.javierchopeklecciones.ui.components.FillBlankExercise
 import io.github.cadnunsdimir.android.javierchopeklecciones.ui.components.TranslationExercise
 import io.github.cadnunsdimir.android.javierchopeklecciones.ui.components.enums.StatusWordGuesser
 import io.github.cadnunsdimir.android.javierchopeklecciones.ui.viewmodel.LessonViewModel
@@ -42,6 +43,11 @@ fun LessonScreenV2(viewModel: LessonViewModel = viewModel(), loginViewModel: Log
 
         when(lessonState.value.lesson?.type){
             "translation" ->  TranslationExercise(
+                question = "${lessonState.value.lesson?.question}",
+                answer = lessonState.value.answer,
+                viewModel = viewModel
+            )
+            "fill_blank" -> FillBlankExercise(
                 question = "${lessonState.value.lesson?.question}",
                 answer = lessonState.value.answer,
                 viewModel = viewModel
