@@ -15,4 +15,6 @@ data class LessonState(
     val lessonIndex: Int = 0,
     val message: String? = "",
     val correctAnswer: String? = "",
+    val completedLesson: Boolean = false,
+    val score: Int = 20
 )

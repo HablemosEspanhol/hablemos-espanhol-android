@@ -27,13 +27,14 @@ fun LessonScreenV2(viewModel: LessonViewModel = viewModel(), loginViewModel: Log
 
     val lessonState = viewModel.uiState.collectAsState()
     val login = loginViewModel.uiState.collectAsState()
+    val exercise = lessonState.value
 
     LaunchedEffect(Unit) {
         viewModel.loadExercises(login.value.login)
     }
 
-    if (lessonState.value.lesson != null) {
-        val exercise = lessonState.value
+    if (exercise.lesson != null) {
+
         Column(
             Modifier
                 .fillMaxSize()
@@ -45,7 +46,7 @@ fun LessonScreenV2(viewModel: LessonViewModel = viewModel(), loginViewModel: Log
             Text("Lição TBD")
             Spacer(Modifier.height(10.dp))
 
-            when (exercise.lesson?.type) {
+            when (exercise.lesson.type) {
                 "translation" -> TranslationExercise(
                     question = "${lessonState.value.lesson?.question}",
                     answer = lessonState.value.answer,
@@ -64,23 +65,34 @@ fun LessonScreenV2(viewModel: LessonViewModel = viewModel(), loginViewModel: Log
                     viewModel = viewModel
                 )
 
-                else -> Text("Exercício do tipo ${lessonState.value.lesson?.type} não implementado")
+                else -> Text("Exercício do tipo ${exercise.lesson.type} não implementado")
             }
 
-            if (lessonState.value.statusWordGuesser != StatusWordGuesser.DONE) {
+            if (exercise.statusWordGuesser != StatusWordGuesser.DONE) {
                 Button({
                     viewModel.checkAnswer(login.value.login)
                 }) {
                     Text("Verificar")
                 }
             } else {
-                Text("${lessonState.value.message}! ${lessonState.value.correctAnswer}")
+                val status = if(exercise.message?.contains("incorreta") ?: false)
+                StatusWordGuesser.WRONG else StatusWordGuesser.DONE
+                Text("${exercise.message}")
+                WordGuesserComponent(status, exercise.correctAnswer as String)
+                Spacer(Modifier.height(20.dp))
                 NextQuestionButton(onProgress = {
                     viewModel.nextQuestion()
                 })
             }
         }
+    }
 
+    if(exercise.completedLesson){
+        FinishLesson(score = exercise.score,
+            onNextLesson = {
+                viewModel.loadExercises(login.value.login)
+            }
+        )
     }
 }
 

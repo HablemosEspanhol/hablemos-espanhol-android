@@ -39,13 +39,21 @@ class LessonViewModel(application: Application): AndroidViewModel(application) {
 
     fun nextQuestion() {
         val lessonIndex = _uiState.value.lessonIndex +1
+        var lesson: ExerciseApiResponse? = null
+        val answeredAllQuestions = lessonIndex >= exercises.value.size
+        if(!answeredAllQuestions) {
+            lesson = exercises.value[lessonIndex]
+        }
+
         _uiState.value = _uiState.value.copy(
             answer = "",
             statusWordGuesser = StatusWordGuesser.NEW,
             lessonIndex = lessonIndex,
-            lesson = exercises.value[lessonIndex],
+            lesson = lesson,
             percentualProgress = lessonIndex.toFloat() / exercises.value.size
         )
+
+
     }
 
     fun checkAnswer(username: String) {
@@ -55,7 +63,7 @@ class LessonViewModel(application: Application): AndroidViewModel(application) {
                     username = username,
                     exerciseId = "${_uiState.value.lesson?.id}",
                     userAnswer = _uiState.value.answer.trim(),
-                    answer = _uiState.value.lesson?.question?:""
+                    answer = _uiState.value.answer.trim()
                 )
 
                 println("Resultado: ${response.message}")

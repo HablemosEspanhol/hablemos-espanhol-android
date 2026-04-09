@@ -203,7 +203,7 @@ fun RecordAudioButton(buttonText: String, onStartRecognition: ()-> Unit, onError
     }
 }
 @Composable
-fun FinishLesson(nextLesson: Int, score: Int, onNextLesson: (Int) -> Unit) {
+fun FinishLesson(nextLesson: Int = 1, score: Int, onNextLesson: (Int) -> Unit) {
     Box (
         modifier = Modifier
             .fillMaxSize()
