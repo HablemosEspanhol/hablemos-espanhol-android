@@ -12,14 +12,14 @@ import io.github.cadnunsdimir.android.javierchopeklecciones.ui.viewmodel.LessonV
 @Composable
 fun TranslationExercise(question: String, answer: String, viewModel: LessonViewModel) {
     Text("Traduza para português")
-    Spacer(Modifier.Companion.height(20.dp))
+    Spacer(Modifier.height(20.dp))
     Text(question)
-    Spacer(Modifier.Companion.height(20.dp))
+    Spacer(Modifier.height(20.dp))
     OutlinedTextField(
         value = answer,
         onValueChange = { viewModel.onAnswer(it) },
         singleLine = true
     )
-    Spacer(Modifier.Companion.height(20.dp))
+    Spacer(Modifier.height(20.dp))
 }
 
