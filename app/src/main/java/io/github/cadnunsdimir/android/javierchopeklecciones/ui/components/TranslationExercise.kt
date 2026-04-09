@@ -22,3 +22,4 @@ fun TranslationExercise(question: String, answer: String, viewModel: LessonViewM
     )
     Spacer(Modifier.Companion.height(20.dp))
 }
+

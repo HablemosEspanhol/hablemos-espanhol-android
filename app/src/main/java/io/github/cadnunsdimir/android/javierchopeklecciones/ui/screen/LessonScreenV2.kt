@@ -15,12 +15,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import io.github.cadnunsdimir.android.javierchopeklecciones.ui.components.FillBlankExercise
+import io.github.cadnunsdimir.android.javierchopeklecciones.ui.components.FinishLesson
+import io.github.cadnunsdimir.android.javierchopeklecciones.ui.components.LessonProgressBar
 import io.github.cadnunsdimir.android.javierchopeklecciones.ui.components.MultipleChoiceExercise
+import io.github.cadnunsdimir.android.javierchopeklecciones.ui.components.NextQuestionButton
 import io.github.cadnunsdimir.android.javierchopeklecciones.ui.components.TranslationExercise
+import io.github.cadnunsdimir.android.javierchopeklecciones.ui.components.WordGuesserComponent
 import io.github.cadnunsdimir.android.javierchopeklecciones.ui.components.enums.StatusWordGuesser
 import io.github.cadnunsdimir.android.javierchopeklecciones.ui.viewmodel.LessonViewModel
 import io.github.cadnunsdimir.android.javierchopeklecciones.ui.viewmodel.LoginUiViewModel
-
 
 @Composable
 fun LessonScreenV2(viewModel: LessonViewModel = viewModel(), loginViewModel: LoginUiViewModel) {
