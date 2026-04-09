@@ -1,4 +1,4 @@
-package io.github.cadnunsdimir.android.javierchopeklecciones.app.state
+package io.github.cadnunsdimir.android.javierchopeklecciones.ui.state
 
 data class LoginState(
     val login: String = "",

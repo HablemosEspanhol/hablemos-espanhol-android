@@ -1,6 +1,5 @@
 package io.github.cadnunsdimir.android.javierchopeklecciones.ui
 
-import android.widget.Toast
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
@@ -12,53 +11,58 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import io.github.cadnunsdimir.android.javierchopeklecciones.app.service.LoginService
-import io.github.cadnunsdimir.android.javierchopeklecciones.app.service.NotificationService
+import androidx.lifecycle.viewmodel.compose.viewModel
 import io.github.cadnunsdimir.android.javierchopeklecciones.ui.screen.HomeScreen
 import io.github.cadnunsdimir.android.javierchopeklecciones.ui.screen.LessonScreen
 import io.github.cadnunsdimir.android.javierchopeklecciones.ui.screen.LoginScreen
 import io.github.cadnunsdimir.android.javierchopeklecciones.ui.screen.ProfileScreen
-import kotlin.coroutines.coroutineContext
+import io.github.cadnunsdimir.android.javierchopeklecciones.ui.viewmodel.LoginUiViewModel
 
 enum class AppDestinations(
     val label: String,
     val icon: ImageVector,
+    val showLogged: Boolean? = null
 ) {
     HOME("Inicio", Icons.Default.Home),
-    EXERCISES("Ejercícios", Icons.Default.Create),
-    PROFILE("Perfil", Icons.Default.AccountBox),
+    EXERCISES("Ejercícios", Icons.Default.Create, true),
+    PROFILE("Perfil", Icons.Default.AccountBox, true),
+    LOGIN("Login", Icons.Default.AccountBox, false),
 }
 
 
 @Composable
-fun JavierChopekLeccionesApp() {
+fun JavierChopekLeccionesApp(loginViewModel: LoginUiViewModel = viewModel()) {
     var currentDestination by rememberSaveable { mutableStateOf(AppDestinations.HOME) }
-    val loginService = LoginService()
-    val context = LocalContext.current
+    val isLogged = loginViewModel.isLogged().collectAsState(false)
 
     NavigationSuiteScaffold(
         navigationSuiteItems = {
             AppDestinations.entries.forEach {
-                item(
-                    icon = {
-                        Icon(
-                            it.icon,
-                            contentDescription = it.label
-                        )
-                    },
-                    label = { Text(it.label) },
-                    selected = it == currentDestination,
-                    onClick = { currentDestination = it }
-                )
+                val showMenu = it.showLogged == null ||
+                        it.showLogged == isLogged.value
+
+                if (showMenu){
+                    item(
+                        icon = {
+                            Icon(
+                                it.icon,
+                                contentDescription = it.label
+                            )
+                        },
+                        label = { Text(it.label) },
+                        selected = it == currentDestination,
+                        onClick = { currentDestination = it }
+                    )
+                }
             }
         }
     ) {
@@ -67,18 +71,18 @@ fun JavierChopekLeccionesApp() {
                 .padding(20.dp)
 
         ) { innerPadding ->
-
             when(currentDestination) {
                 AppDestinations.HOME -> HomeScreen(
-                    modifier = Modifier.padding(innerPadding)
+                    innerPadding
                 )
                 AppDestinations.EXERCISES -> LessonScreen()
-                AppDestinations.PROFILE -> if (loginService.isLogged()){
-                    ProfileScreen()
-                } else {
-                    LoginScreen()
-                }
+                AppDestinations.PROFILE -> ProfileScreen(innerPadding, loginViewModel)
+                AppDestinations.LOGIN -> LoginScreen(innerPadding, loginViewModel,
+                    onLoginSuccess = {
+                        currentDestination = AppDestinations.PROFILE
+                    })
             }
+
         }
     }
 }

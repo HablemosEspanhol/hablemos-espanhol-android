@@ -1,6 +1,6 @@
 package io.github.cadnunsdimir.android.javierchopeklecciones.app.service
 
-import io.github.cadnunsdimir.android.javierchopeklecciones.app.entity.Lesson
+import io.github.cadnunsdimir.android.javierchopeklecciones.app.db.entity.Lesson
 
 
 class SpreadSheetLessonRestClient : BaseLessonRestClient() {

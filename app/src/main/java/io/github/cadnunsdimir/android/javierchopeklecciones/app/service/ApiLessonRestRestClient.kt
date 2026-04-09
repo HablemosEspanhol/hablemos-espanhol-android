@@ -1,7 +1,7 @@
 package io.github.cadnunsdimir.android.javierchopeklecciones.app.service
 
-import io.github.cadnunsdimir.android.javierchopeklecciones.app.entity.Lesson
-import io.github.cadnunsdimir.android.javierchopeklecciones.app.entity.Question
+import io.github.cadnunsdimir.android.javierchopeklecciones.app.db.entity.Lesson
+import io.github.cadnunsdimir.android.javierchopeklecciones.app.db.entity.Question
 import org.json.JSONObject
 
 class ApiLessonRestRestClient: BaseLessonRestClient() {

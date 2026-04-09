@@ -39,14 +39,12 @@ import androidx.compose.ui.unit.sp
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
-import io.github.cadnunsdimir.android.javierchopeklecciones.app.entity.Lesson
-import io.github.cadnunsdimir.android.javierchopeklecciones.app.repository.LessonRepository
-import io.github.cadnunsdimir.android.javierchopeklecciones.app.repository.ProgressRepository
+import io.github.cadnunsdimir.android.javierchopeklecciones.app.db.entity.Lesson
+import io.github.cadnunsdimir.android.javierchopeklecciones.app.db.repository.DatabaseProvider
+import io.github.cadnunsdimir.android.javierchopeklecciones.app.db.repository.LessonRepository
+import io.github.cadnunsdimir.android.javierchopeklecciones.app.db.repository.ProgressRepository
 import io.github.cadnunsdimir.android.javierchopeklecciones.app.service.SpeechRecognitionListener
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.withContext
 import java.text.Normalizer
 
 const val WAITING = "Aguardando..."
@@ -56,9 +54,11 @@ const val RECORD = "Gravar Pronúncia"
 @Composable
 fun LessonScreen() {
     val context = LocalContext.current
+    val db = DatabaseProvider.getDatabase(context)
+    val repository = db.lessonRepository()
     val lessonEntity: Lesson
     runBlocking{
-        lessonEntity = LessonRepository.getLesson(ProgressRepository.getNextLesson()) as Lesson
+        lessonEntity = repository.getOne(ProgressRepository.getNextLesson())
     }
     var lessonScore = 20
     val penalty = 1
@@ -121,7 +121,7 @@ fun LessonScreen() {
                 ProgressRepository.saveCompletedLesson(lesson.id, lessonScore)
                 val lessonEntity: Lesson?
                 runBlocking{
-                    lessonEntity = LessonRepository.getLesson(ProgressRepository.getNextLesson())
+                    lessonEntity = repository.getOne(ProgressRepository.getNextLesson())
                 }
                 if(lessonEntity !== null) {
                     lessonEntity.randomizeQuestions()

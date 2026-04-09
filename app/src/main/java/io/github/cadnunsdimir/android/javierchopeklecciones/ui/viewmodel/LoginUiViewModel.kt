@@ -1,13 +1,87 @@
 package io.github.cadnunsdimir.android.javierchopeklecciones.ui.viewmodel
 
-import androidx.lifecycle.ViewModel
-import io.github.cadnunsdimir.android.javierchopeklecciones.app.state.LoginState
+import android.app.Application
+import android.content.Context
+import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.stringPreferencesKey
+import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.viewModelScope
+import io.github.cadnunsdimir.android.javierchopeklecciones.ui.dataStore
+import io.github.cadnunsdimir.android.javierchopeklecciones.ui.state.LoginState
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
 
+enum class FormField {
+    LOGIN,
+    PASSWORD
+}
 
-class LoginUiViewModel: ViewModel() {
+class LoginUiViewModel (application: Application): AndroidViewModel(application) {
+
+    private val context = getApplication<Application>()
     private val _uiState = MutableStateFlow(LoginState())
     val uiState: StateFlow<LoginState> = _uiState.asStateFlow()
+
+    fun onLoginChange(value: String) {
+        _uiState.value = _uiState.value.copy(login = value)
+    }
+
+    fun onPasswordChange(value: String) {
+        _uiState.value = _uiState.value.copy(password = value)
+    }
+
+    fun isError(field: FormField): Boolean {
+        if (field == FormField.LOGIN){
+            return _uiState.value.login.length < 5
+        }
+        return false
+    }
+
+    fun isFormValid(): Boolean {
+        return !isError(FormField.LOGIN) &&
+                !isError(FormField.PASSWORD)
+    }
+
+    fun getUserName(context: Context): Flow<String?> {
+        val key = stringPreferencesKey("user_name")
+
+        return context.dataStore.data.map { prefs ->
+            prefs[key]
+        }
+    }
+
+    suspend fun saveUserName(context: Context, name: String) {
+        val key = stringPreferencesKey("user_name")
+
+        context.dataStore.edit { prefs ->
+            prefs[key] = name
+        }
+    }
+
+    fun login(): Boolean {
+        viewModelScope.launch(Dispatchers.IO) {
+            saveUserName(context, _uiState.value.login)
+        }
+
+        return true
+    }
+
+    fun logout() {
+        viewModelScope.launch(Dispatchers.IO) {
+            saveUserName(context, "")
+        }
+    }
+
+    fun isLogged() : Flow<Boolean>{
+        return getUserName(context).map {
+            if (!it.isNullOrBlank())
+                _uiState.value = _uiState.value.copy(login = it)
+            return@map !it.isNullOrBlank()
+        }
+    }
 }

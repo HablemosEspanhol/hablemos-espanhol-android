@@ -1,4 +1,4 @@
 <resources>
-    <string name="app_name" translatable="false">Click Habla!</string>
-    <string name="home_text">Seja Bem vindo ao aplicativo exclusivo para os meus alunos, onde poderei passar exercícios em espanhol para vocês</string>
+    <string name="app_name" translatable="false">Hablemos Espanhol!</string>
+    <string name="home_text">Seja Bem vindo ao aplicativo exclusivo para os alunos do Prof. Javier Chopek, onde poderei passar exercícios em espanhol para vocês</string>
 </resources>

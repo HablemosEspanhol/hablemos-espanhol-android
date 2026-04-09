@@ -3,6 +3,7 @@ package io.github.cadnunsdimir.android.javierchopeklecciones.ui.screen
 import android.content.Context
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -23,21 +24,23 @@ import androidx.core.content.ContextCompat.getString
 import io.github.cadnunsdimir.android.javierchopeklecciones.R
 
 @Composable
-fun HomeScreen(modifier: Modifier = Modifier, ctx: Context = LocalContext.current) {
+fun HomeScreen(innerPadding: PaddingValues, ctx: Context = LocalContext.current) {
     Column (
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier
+            .padding(innerPadding)
+            .fillMaxWidth()
             .padding(10.dp)
     ){
         Text(
             text = getString(ctx, R.string.app_name),
-            modifier = modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth(),
             fontSize = 22.sp,
             fontWeight = FontWeight.Bold,
             textAlign = TextAlign.Center
         )
         Spacer(Modifier.padding(10.dp))
         Image(
-            modifier = modifier
+            modifier = Modifier
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(16.dp)),
             painter = painterResource(R.drawable.splash_screen),
@@ -46,13 +49,6 @@ fun HomeScreen(modifier: Modifier = Modifier, ctx: Context = LocalContext.curren
         Spacer(Modifier.padding(10.dp))
         Text(
             text =  getString(ctx, R.string.home_text),
-            modifier = modifier
         )
     }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun HomePreview() {
-    HomeScreen(ctx = LocalContext.current)
 }

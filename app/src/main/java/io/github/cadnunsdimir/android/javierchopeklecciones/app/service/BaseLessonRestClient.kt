@@ -1,6 +1,6 @@
 package io.github.cadnunsdimir.android.javierchopeklecciones.app.service
 
-import io.github.cadnunsdimir.android.javierchopeklecciones.app.entity.Lesson
+import io.github.cadnunsdimir.android.javierchopeklecciones.app.db.entity.Lesson
 import java.io.BufferedReader
 import java.io.IOException
 import java.io.InputStreamReader

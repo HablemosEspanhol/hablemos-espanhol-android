@@ -1,8 +1,8 @@
 package io.github.cadnunsdimir.android.javierchopeklecciones.app.service
 
 import android.content.Context
-import io.github.cadnunsdimir.android.javierchopeklecciones.app.entity.Lesson
-import io.github.cadnunsdimir.android.javierchopeklecciones.app.entity.Question
+import io.github.cadnunsdimir.android.javierchopeklecciones.app.db.entity.Lesson
+import io.github.cadnunsdimir.android.javierchopeklecciones.app.db.entity.Question
 import java.io.BufferedReader
 import java.io.InputStreamReader
 import kotlin.collections.set

@@ -1,4 +1,4 @@
-package io.github.cadnunsdimir.android.javierchopeklecciones.app.entity
+package io.github.cadnunsdimir.android.javierchopeklecciones.app.db.entity
 
 import androidx.room.Entity
 

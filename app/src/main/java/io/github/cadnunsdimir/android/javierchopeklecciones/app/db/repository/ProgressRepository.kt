@@ -1,6 +1,6 @@
-package io.github.cadnunsdimir.android.javierchopeklecciones.app.repository
+package io.github.cadnunsdimir.android.javierchopeklecciones.app.db.repository
 
-import io.github.cadnunsdimir.android.javierchopeklecciones.app.entity.MyProgress
+import io.github.cadnunsdimir.android.javierchopeklecciones.app.db.entity.MyProgress
 
 class ProgressRepository {
     companion object {
