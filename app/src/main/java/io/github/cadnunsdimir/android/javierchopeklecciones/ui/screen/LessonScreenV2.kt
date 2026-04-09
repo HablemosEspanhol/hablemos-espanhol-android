@@ -28,7 +28,7 @@ import io.github.cadnunsdimir.android.javierchopeklecciones.ui.viewmodel.LoginUi
 @Composable
 fun LessonScreenV2(viewModel: LessonViewModel = viewModel(), loginViewModel: LoginUiViewModel) {
 
-    val exercise = viewModel.uiState.collectAsState().value
+    val lesson = viewModel.uiState.collectAsState().value
     val login = loginViewModel.uiState.collectAsState().value
 
     LaunchedEffect(Unit) {
@@ -37,53 +37,53 @@ fun LessonScreenV2(viewModel: LessonViewModel = viewModel(), loginViewModel: Log
             login.proficiencyLevel)
     }
 
-    if (exercise.exercise != null) {
-
+    if (lesson.exercise != null) {
+        val question = lesson.exercise.question
         Column(
             Modifier
                 .fillMaxSize()
                 .padding(16.dp), horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Spacer(Modifier.height(20.dp))
-            LessonProgressBar(exercise.percentualProgress)
+            LessonProgressBar(lesson.percentualProgress)
             Spacer(Modifier.height(20.dp))
             Text("Lição ${login.lessonCounter} - Nível ${login.proficiencyLevel}")
             Spacer(Modifier.height(10.dp))
 
-            when (exercise.exercise.type) {
+            when (lesson.exercise.type) {
                 "translation" -> TranslationExercise(
-                    question = exercise.question,
-                    answer = exercise.answer,
+                    question = question,
+                    answer = lesson.answer,
                     viewModel = viewModel
                 )
 
                 "fill_blank" -> FillBlankExercise(
-                    question = exercise.exercise.question,
-                    answer = exercise.answer,
+                    question = question,
+                    answer = lesson.answer,
                     viewModel = viewModel
                 )
 
                 "multiple_choice" -> MultipleChoiceExercise(
-                    question = exercise.exercise.question,
-                    options = exercise.exercise.options as List<String>,
-                    selectedOption = exercise.answer,
+                    question = question,
+                    options = lesson.exercise.options as List<String>,
+                    selectedOption = lesson.answer,
                     viewModel = viewModel
                 )
 
-                else -> Text("Exercício do tipo ${exercise.exercise.type} não implementado")
+                else -> Text("Exercício do tipo ${lesson.exercise.type} não implementado")
             }
 
-            if (exercise.statusWordGuesser != StatusWordGuesser.DONE) {
+            if (lesson.statusWordGuesser != StatusWordGuesser.DONE) {
                 Button({
                     viewModel.checkAnswer(login.login)
                 }) {
                     Text("Verificar")
                 }
             } else {
-                val status = if(exercise.message?.contains("incorreta") ?: false)
+                val status = if(lesson.message?.contains("incorreta") ?: false)
                 StatusWordGuesser.WRONG else StatusWordGuesser.DONE
-                Text("${exercise.message}")
-                WordGuesserComponent(status, exercise.correctAnswer as String)
+                Text("${lesson.message}")
+                WordGuesserComponent(status, lesson.correctAnswer as String)
                 Spacer(Modifier.height(20.dp))
                 NextQuestionButton(onProgress = {
                     viewModel.nextQuestion(login.login)
@@ -92,11 +92,13 @@ fun LessonScreenV2(viewModel: LessonViewModel = viewModel(), loginViewModel: Log
         }
     }
 
-    if(exercise.completedLesson){
-        loginViewModel.updateProficiencyLevel(exercise.level)
-        FinishLesson(score = exercise.score,
+    if(lesson.completedLesson){
+        loginViewModel.updateProficiencyLevel(lesson.level)
+        FinishLesson(
+            score = lesson.score,
+            message = lesson.message,
             onNextLesson = {
-                viewModel.loadExercises(login.login, exercise.level)
+                viewModel.loadExercises(login.login, lesson.level)
             }
         )
     }
