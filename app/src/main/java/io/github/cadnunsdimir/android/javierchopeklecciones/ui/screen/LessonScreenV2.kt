@@ -25,15 +25,16 @@ import io.github.cadnunsdimir.android.javierchopeklecciones.ui.viewmodel.LoginUi
 @Composable
 fun LessonScreenV2(viewModel: LessonViewModel = viewModel(), loginViewModel: LoginUiViewModel) {
 
-    val lessonState = viewModel.uiState.collectAsState()
-    val login = loginViewModel.uiState.collectAsState()
-    val exercise = lessonState.value
+    val exercise = viewModel.uiState.collectAsState().value
+    val login = loginViewModel.uiState.collectAsState().value
 
     LaunchedEffect(Unit) {
-        viewModel.loadExercises(login.value.login)
+        viewModel.loadExercises(
+            login.login,
+            login.proficiencyLevel)
     }
 
-    if (exercise.lesson != null) {
+    if (exercise.exercise != null) {
 
         Column(
             Modifier
@@ -43,34 +44,35 @@ fun LessonScreenV2(viewModel: LessonViewModel = viewModel(), loginViewModel: Log
             Spacer(Modifier.height(20.dp))
             LessonProgressBar(exercise.percentualProgress)
             Spacer(Modifier.height(20.dp))
-            Text("Lição TBD")
+            Text("Lição ${login.lessonCounter} - Nível ${login.proficiencyLevel}")
             Spacer(Modifier.height(10.dp))
 
-            when (exercise.lesson.type) {
+            when (exercise.exercise.type) {
                 "translation" -> TranslationExercise(
-                    question = "${lessonState.value.lesson?.question}",
-                    answer = lessonState.value.answer,
+                    question = exercise.question,
+                    answer = exercise.answer,
                     viewModel = viewModel
                 )
 
                 "fill_blank" -> FillBlankExercise(
-                    question = exercise.lesson.question,
-                    answer = lessonState.value.answer,
+                    question = exercise.exercise.question,
+                    answer = exercise.answer,
                     viewModel = viewModel
                 )
 
                 "multiple_choice" -> MultipleChoiceExercise(
-                    question = exercise.lesson.question,
-                    options = exercise.lesson.options as List<String>,
+                    question = exercise.exercise.question,
+                    options = exercise.exercise.options as List<String>,
+                    selectedOption = exercise.answer,
                     viewModel = viewModel
                 )
 
-                else -> Text("Exercício do tipo ${exercise.lesson.type} não implementado")
+                else -> Text("Exercício do tipo ${exercise.exercise.type} não implementado")
             }
 
             if (exercise.statusWordGuesser != StatusWordGuesser.DONE) {
                 Button({
-                    viewModel.checkAnswer(login.value.login)
+                    viewModel.checkAnswer(login.login)
                 }) {
                     Text("Verificar")
                 }
@@ -81,16 +83,17 @@ fun LessonScreenV2(viewModel: LessonViewModel = viewModel(), loginViewModel: Log
                 WordGuesserComponent(status, exercise.correctAnswer as String)
                 Spacer(Modifier.height(20.dp))
                 NextQuestionButton(onProgress = {
-                    viewModel.nextQuestion()
+                    viewModel.nextQuestion(login.login)
                 })
             }
         }
     }
 
     if(exercise.completedLesson){
+        loginViewModel.updateProficiencyLevel(exercise.level)
         FinishLesson(score = exercise.score,
             onNextLesson = {
-                viewModel.loadExercises(login.value.login)
+                viewModel.loadExercises(login.login, exercise.level)
             }
         )
     }

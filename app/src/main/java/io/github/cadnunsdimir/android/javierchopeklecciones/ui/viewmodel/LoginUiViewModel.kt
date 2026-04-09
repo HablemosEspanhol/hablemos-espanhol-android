@@ -83,5 +83,17 @@ class LoginUiViewModel (application: Application): AndroidViewModel(application)
             return@map !it.isNullOrBlank()
         }
     }
+
+    fun updateProficiencyLevel(level: String) {
+        val key = stringPreferencesKey("proficiency_level")
+
+        viewModelScope.launch {
+            context.dataStore.edit { prefs ->
+                prefs[key] = level
+            }
+        }
+
+        _uiState.value = _uiState.value.copy(proficiencyLevel = level)
+    }
 }
 

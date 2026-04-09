@@ -5,6 +5,8 @@ import io.github.cadnunsdimir.android.javierchopeklecciones.app.dto.AnswerReques
 import io.github.cadnunsdimir.android.javierchopeklecciones.app.dto.CheckExerciseRequest
 import io.github.cadnunsdimir.android.javierchopeklecciones.app.dto.CheckExerciseResponse
 import io.github.cadnunsdimir.android.javierchopeklecciones.app.dto.ExerciseApiResponse
+import io.github.cadnunsdimir.android.javierchopeklecciones.app.dto.SubmitRequest
+import io.github.cadnunsdimir.android.javierchopeklecciones.app.dto.SubmitResponse
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.Body
@@ -22,6 +24,11 @@ interface ExerciseApiService {
     suspend fun checkExercise(
         @Body request: CheckExerciseRequest
     ): CheckExerciseResponse
+
+    @POST("api/exercises/submit")
+    suspend fun submitAnswers(
+        @Body request: SubmitRequest
+    ): SubmitResponse
 }
 
 object RetrofitClient {
@@ -41,7 +48,6 @@ class ApiLessonRestClientV2 {
     suspend fun checkAnswer(
         username: String,
         exerciseId: String,
-        userAnswer: String,
         answer: String
     ): CheckExerciseResponse {
 
@@ -49,11 +55,23 @@ class ApiLessonRestClientV2 {
             username = username,
             answer = AnswerRequest(
                 exerciseId = exerciseId,
-                userAnswer = userAnswer,
                 answer = answer
             )
         )
 
         return RetrofitClient.api.checkExercise(request)
+    }
+
+    suspend fun submitAnswers(
+        username: String,
+        answers: List<AnswerRequest>
+    ): SubmitResponse {
+
+        val request = SubmitRequest(
+            username = username,
+            answers = answers
+        )
+
+        return RetrofitClient.api.submitAnswers(request)
     }
 }
