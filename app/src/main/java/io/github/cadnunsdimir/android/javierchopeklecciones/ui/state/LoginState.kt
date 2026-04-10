@@ -5,5 +5,6 @@ data class LoginState(
     val password: String = "",
     val proficiencyLevel: String = "A1",
     val lessonCounter: Int = 1,
-    val score: Int = 0
+    val score: Int = 0,
+    val formIsValid: Boolean = false
 )

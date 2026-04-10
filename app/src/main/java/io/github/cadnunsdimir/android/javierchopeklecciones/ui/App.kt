@@ -82,7 +82,7 @@ fun JavierChopekLeccionesApp(loginViewModel: LoginUiViewModel = viewModel()) {
                 AppDestinations.EXERCISES_V1 -> LessonScreen()
                 AppDestinations.EXERCISES_V2 -> LessonScreenV2(loginViewModel = loginViewModel)
                 AppDestinations.PROFILE -> ProfileScreen(innerPadding, loginViewModel) {
-                    currentDestination = AppDestinations.PROFILE
+                    currentDestination = AppDestinations.HOME
                 }
                 AppDestinations.LOGIN -> LoginScreen(innerPadding, loginViewModel){
                     currentDestination = AppDestinations.HOME

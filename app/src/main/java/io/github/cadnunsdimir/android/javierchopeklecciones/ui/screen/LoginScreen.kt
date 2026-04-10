@@ -38,7 +38,6 @@ fun LoginScreen(
 
     val focusManager = LocalFocusManager.current
     val uiState = loginViewModel.uiState.collectAsStateWithLifecycle()
-    val formIsValid = loginViewModel.isFormValid()
 
     Box(
         modifier = Modifier
@@ -104,7 +103,7 @@ fun LoginScreen(
                     keyboardActions = KeyboardActions(
                         onDone = {
                             focusManager.clearFocus()
-                            if (formIsValid && loginViewModel.login()) {
+                            if (uiState.value.formIsValid && loginViewModel.login()) {
                                 onLoginSuccess()
                             }
                         }
@@ -119,7 +118,7 @@ fun LoginScreen(
                             onLoginSuccess()
                         }
                     },
-                    enabled = formIsValid,
+                    enabled = uiState.value.formIsValid,
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(56.dp)

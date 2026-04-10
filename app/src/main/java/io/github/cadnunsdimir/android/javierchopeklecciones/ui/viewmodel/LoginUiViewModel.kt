@@ -36,16 +36,15 @@ class LoginUiViewModel (application: Application): AndroidViewModel(application)
     }
 
     fun isError(field: FormField): Boolean {
+
         if (field == FormField.LOGIN){
-            return _uiState.value.login.length < 5
+            val isError = _uiState.value.login.length < 5
+            _uiState.value = _uiState.value.copy(formIsValid = !isError)
+            return isError
         }
         return false
     }
 
-    fun isFormValid(): Boolean {
-        return !isError(FormField.LOGIN) &&
-                !isError(FormField.PASSWORD)
-    }
     suspend fun saveUserName(name: String) {
         val key = stringPreferencesKey("user_name")
 
