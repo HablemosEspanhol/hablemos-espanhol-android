@@ -71,13 +71,14 @@ fun JavierChopekLeccionesApp(loginViewModel: LoginUiViewModel = viewModel()) {
     ) {
         Scaffold(
             modifier = Modifier.fillMaxSize()
-                .padding(20.dp)
+                .padding(5.dp)
+                .padding(top= 40.dp)
 
         ) { innerPadding ->
             when(currentDestination) {
-                AppDestinations.HOME -> HomeScreen(
-                    innerPadding
-                )
+                AppDestinations.HOME -> HomeScreen(innerPadding) {
+                    currentDestination = if(isLogged.value) AppDestinations.EXERCISES_V2 else AppDestinations.EXERCISES_V1
+                }
                 AppDestinations.EXERCISES_V1 -> LessonScreen()
                 AppDestinations.EXERCISES_V2 -> LessonScreenV2(loginViewModel = loginViewModel)
                 AppDestinations.PROFILE -> ProfileScreen(innerPadding, loginViewModel) {

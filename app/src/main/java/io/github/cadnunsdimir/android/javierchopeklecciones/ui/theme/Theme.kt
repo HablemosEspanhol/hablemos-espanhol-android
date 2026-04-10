@@ -1,6 +1,5 @@
 package io.github.cadnunsdimir.android.javierchopeklecciones.ui.theme
 
-import android.app.Activity
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
@@ -9,6 +8,7 @@ import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 
 private val DarkColorScheme = darkColorScheme(
@@ -18,26 +18,33 @@ private val DarkColorScheme = darkColorScheme(
 )
 
 private val LightColorScheme = lightColorScheme(
-    primary = Purple40,
-    secondary = PurpleGrey40,
-    tertiary = Pink40
 
-    /* Other default colors to override
-    background = Color(0xFFFFFBFE),
-    surface = Color(0xFFFFFBFE),
+    primary = Color(0xFF1E88E5),          // azul confiável
     onPrimary = Color.White,
+
+    primaryContainer = Color(0xFFE3F2FD),
+    onPrimaryContainer = Color(0xFF0D47A1),
+
+    secondary = Color(0xFF546E7A),
     onSecondary = Color.White,
-    onTertiary = Color.White,
+
+    background = Color(0xFFF9FAFB),
     onBackground = Color(0xFF1C1B1F),
+
+    surface = Color.White,
     onSurface = Color(0xFF1C1B1F),
-    */
+
+    error = Color(0xFFD32F2F),
+    onError = Color.White,
+
+    errorContainer = Color(0xFFFDECEA),
+    onErrorContainer = Color(0xFF7F1D1D)
 )
 
 @Composable
 fun JavierChopekLeccionesTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
-    // Dynamic color is available on Android 12+
-    dynamicColor: Boolean = true,
+    dynamicColor: Boolean = false,
     content: @Composable () -> Unit
 ) {
     val colorScheme = when {
