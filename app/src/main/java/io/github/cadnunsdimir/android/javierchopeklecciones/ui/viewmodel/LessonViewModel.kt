@@ -1,0 +1,111 @@
+package io.github.cadnunsdimir.android.javierchopeklecciones.ui.viewmodel
+
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.viewModelScope
+import io.github.cadnunsdimir.android.javierchopeklecciones.app.dto.AnswerRequest
+import io.github.cadnunsdimir.android.javierchopeklecciones.app.dto.ExerciseApiResponse
+import io.github.cadnunsdimir.android.javierchopeklecciones.app.service.ApiLessonRestClientV2
+import io.github.cadnunsdimir.android.javierchopeklecciones.ui.components.enums.StatusWordGuesser
+import io.github.cadnunsdimir.android.javierchopeklecciones.ui.state.LessonState
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
+
+class LessonViewModel(application: Application): AndroidViewModel(application) {
+    var restClient =  ApiLessonRestClientV2()
+    private val _exercises = MutableStateFlow<List<ExerciseApiResponse>>(emptyList())
+    val exercises: StateFlow<List<ExerciseApiResponse>> = _exercises
+    private val _uiState = MutableStateFlow(LessonState())
+    val uiState: StateFlow<LessonState> = _uiState.asStateFlow()
+    val answers: MutableList<AnswerRequest> = mutableListOf()
+
+
+    fun loadExercises(username: String, proficiencyLevel: String) {
+        viewModelScope.launch {
+            try {
+                val result = restClient.fetchExercises(username)
+                _exercises.value = result
+                _uiState.value  = _uiState.value.copy(
+                    percentualProgress = 0f,
+                    exercise = _exercises.value[0],
+                    exerciseIndex = 0,
+                    level = proficiencyLevel,
+                    completedLesson = false
+                )
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+    }
+
+    fun onAnswer(value: String) {
+        _uiState.value = _uiState.value.copy(answer = value)
+    }
+
+    fun nextQuestion(username: String) {
+        val lessonIndex = _uiState.value.exerciseIndex +1
+        var lesson: ExerciseApiResponse? = null
+        val answeredAllQuestions = lessonIndex >= exercises.value.size
+        if(!answeredAllQuestions) {
+            lesson = exercises.value[lessonIndex]
+        }
+
+        _uiState.value = _uiState.value.copy(
+            answer = "",
+            statusWordGuesser = StatusWordGuesser.NEW,
+            exerciseIndex = lessonIndex,
+            exercise = lesson,
+            percentualProgress = lessonIndex.toFloat() / exercises.value.size
+        )
+
+        if (answeredAllQuestions) {
+
+            viewModelScope.launch {
+                val response = restClient.submitAnswers(
+                    username = username,
+                    answers = answers
+                )
+
+                _uiState.value = _uiState.value.copy(
+                    completedLesson = true,
+                    message = response.message,
+                    level = response.newLevel,
+                    score = response.accuracy
+                )
+            }
+        }
+
+    }
+
+    fun checkAnswer(username: String) {
+        viewModelScope.launch {
+            try {
+                val answerRequest = AnswerRequest(
+                    "${_uiState.value.exercise?.id}",
+                    _uiState.value.answer.trim()
+                    )
+                val response = restClient.checkAnswer(
+                    username = username,
+                    exerciseId = answerRequest.exerciseId,
+                    answer = answerRequest.answer
+                )
+
+                answers.add(answerRequest)
+
+                println("Resultado: ${response.message}")
+                _uiState.value = _uiState.value.copy(
+                    message = response.message,
+                    correctAnswer = response.correctAnswer,
+                    statusWordGuesser = StatusWordGuesser.DONE
+                )
+
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+    }
+
+
+}

@@ -1,14 +1,14 @@
 package io.github.cadnunsdimir.android.javierchopeklecciones.app.service
 
 import android.content.Context
-import io.github.cadnunsdimir.android.javierchopeklecciones.app.entity.Lesson
-import io.github.cadnunsdimir.android.javierchopeklecciones.app.entity.Question
+import io.github.cadnunsdimir.android.javierchopeklecciones.app.db.entity.Lesson
+import io.github.cadnunsdimir.android.javierchopeklecciones.app.db.entity.LessonWithQuestions
+import io.github.cadnunsdimir.android.javierchopeklecciones.app.db.entity.Question
 import java.io.BufferedReader
 import java.io.InputStreamReader
-import kotlin.collections.set
 
 object LessonAssetReader {
-    fun readCsvFromAssets(context: Context, fileName: String): Map<Int, Lesson> {
+    fun readCsvFromAssets(context: Context, fileName: String): Map<Int, LessonWithQuestions> {
         val assetManager = context.assets
         val lines = mutableListOf<String>()
 
@@ -19,7 +19,7 @@ object LessonAssetReader {
             var line: String?
             while (reader.readLine().also { line = it } != null) {
                 if (!line.isNullOrBlank()) {
-                    lines.add(line!!)
+                    lines.add(line)
                 }
             }
             inputStream.close()
@@ -29,8 +29,8 @@ object LessonAssetReader {
         return transform(lines)
     }
 
-    fun transform(csv: List<String>) : Map<Int, Lesson> {
-        val lessons = mutableMapOf<Int, Lesson>()
+    fun transform(csv: List<String>) : Map<Int, LessonWithQuestions> {
+        val lessons = mutableMapOf<Int, LessonWithQuestions>()
         csv.subList(1, csv.size - 1)
             .forEach {
                 val dataset = it
@@ -39,11 +39,12 @@ object LessonAssetReader {
                 val lessonId = dataset[0].toInt()
                 var lesson = lessons[lessonId]
                 if(lesson == null) {
-                    lesson = Lesson(lessonId, listOf())
+                    lesson = LessonWithQuestions(Lesson(lessonId, "title"), listOf())
                     lessons[lessonId] = lesson
                 }
                 val question = Question(
                     dataset[1].toInt(),
+                    lesson.lesson.id,
                     dataset[2],
                     dataset[3]
                 )

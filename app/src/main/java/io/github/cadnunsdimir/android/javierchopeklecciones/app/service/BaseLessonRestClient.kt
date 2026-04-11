@@ -1,6 +1,6 @@
 package io.github.cadnunsdimir.android.javierchopeklecciones.app.service
 
-import io.github.cadnunsdimir.android.javierchopeklecciones.app.entity.Lesson
+import io.github.cadnunsdimir.android.javierchopeklecciones.app.db.entity.LessonWithQuestions
 import java.io.BufferedReader
 import java.io.IOException
 import java.io.InputStreamReader
@@ -8,7 +8,7 @@ import java.net.HttpURLConnection
 import java.net.URL
 
 abstract class BaseLessonRestClient {
-    abstract fun getLessonFromRemote(): Map<Int, Lesson>
+    abstract fun getLessonFromRemote(): Map<Int, LessonWithQuestions>
 
     @Throws(IOException::class)
     fun get(urlString: String): String {
@@ -45,7 +45,8 @@ abstract class BaseLessonRestClient {
 
     companion object {
         fun getInstance(): BaseLessonRestClient {
-            return ApiLessonRestRestClient()
+//            return ApiLessonRestRestClient()
+            return SpreadSheetLessonRestClient()
         }
     }
 }

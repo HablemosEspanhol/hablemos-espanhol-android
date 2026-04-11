@@ -1,14 +1,15 @@
 package io.github.cadnunsdimir.android.javierchopeklecciones.app.service
 
-import io.github.cadnunsdimir.android.javierchopeklecciones.app.entity.Lesson
-import io.github.cadnunsdimir.android.javierchopeklecciones.app.entity.Question
+import io.github.cadnunsdimir.android.javierchopeklecciones.app.db.entity.Lesson
+import io.github.cadnunsdimir.android.javierchopeklecciones.app.db.entity.LessonWithQuestions
+import io.github.cadnunsdimir.android.javierchopeklecciones.app.db.entity.Question
 import org.json.JSONObject
 
 class ApiLessonRestRestClient: BaseLessonRestClient() {
 
-    override fun getLessonFromRemote(): Map<Int, Lesson> {
+    override fun getLessonFromRemote(): Map<Int, LessonWithQuestions> {
         val totalLessons = 10
-        val lessons = mutableMapOf<Int, Lesson>()
+        val lessons = mutableMapOf<Int, LessonWithQuestions>()
         for (id in 1..totalLessons){
             var success = false
             while (!success) {
@@ -24,7 +25,7 @@ class ApiLessonRestRestClient: BaseLessonRestClient() {
         return lessons
     }
 
-    private fun getLesson(id: Int): Lesson {
+    private fun getLesson(id: Int): LessonWithQuestions {
         val json = get("http://192.168.15.3:3000")
         val objectResponse = JSONObject(json)
         val lesson = objectResponse.getJSONArray("data")
@@ -32,10 +33,11 @@ class ApiLessonRestRestClient: BaseLessonRestClient() {
             val obj = lesson.getJSONObject(i)
             Question(
                 i,
+                id,
                 obj.getString("front"),
                 obj.getString("back")
             )
         }
-        return Lesson(id, questions)
+        return LessonWithQuestions(Lesson(id, "title"), questions)
     }
 }
