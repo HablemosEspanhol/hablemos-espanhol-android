@@ -19,6 +19,6 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "JavierChopekLecciones"
+rootProject.name = "hablemos-espanhol-android"
 include(":app")
  
