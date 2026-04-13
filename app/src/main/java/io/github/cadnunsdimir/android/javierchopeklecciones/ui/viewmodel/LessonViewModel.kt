@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import io.github.cadnunsdimir.android.javierchopeklecciones.app.dto.AnswerRequest
 import io.github.cadnunsdimir.android.javierchopeklecciones.app.dto.ExerciseApiResponse
 import io.github.cadnunsdimir.android.javierchopeklecciones.app.service.ApiLessonRestClientV2
+import io.github.cadnunsdimir.android.javierchopeklecciones.app.service.NotificationService
 import io.github.cadnunsdimir.android.javierchopeklecciones.ui.components.enums.StatusWordGuesser
 import io.github.cadnunsdimir.android.javierchopeklecciones.ui.state.LessonState
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -21,7 +22,6 @@ class LessonViewModel(application: Application): AndroidViewModel(application) {
     val uiState: StateFlow<LessonState> = _uiState.asStateFlow()
     val answers: MutableList<AnswerRequest> = mutableListOf()
 
-
     fun loadExercises(username: String, proficiencyLevel: String) {
         viewModelScope.launch {
             try {
@@ -35,6 +35,7 @@ class LessonViewModel(application: Application): AndroidViewModel(application) {
                     completedLesson = false
                 )
             } catch (e: Exception) {
+                NotificationService.notify("Ocorreu um erro ao carregar: ${e.message}")
                 e.printStackTrace()
             }
         }
