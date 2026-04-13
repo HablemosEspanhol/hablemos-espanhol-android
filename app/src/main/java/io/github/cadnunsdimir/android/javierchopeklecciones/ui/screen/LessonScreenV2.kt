@@ -35,7 +35,7 @@ fun LessonScreenV2(
     val lesson = viewModel.uiState.collectAsState().value
     val login = loginViewModel.uiState.collectAsState().value
 
-    if(lesson.exercise == null && !lesson.completedLesson) {
+    if(lesson.exercise == null) {
         LaunchedEffect(Unit) {
             viewModel.loadExercises(login.login, login.proficiencyLevel)
         }
@@ -52,7 +52,8 @@ fun LessonScreenV2(
         )
     }
 
-    if (lesson.exercise == null) return
+    if(lesson.completedLesson) return
+    if(lesson.exercise == null) return
 
     val question = lesson.exercise.question
 

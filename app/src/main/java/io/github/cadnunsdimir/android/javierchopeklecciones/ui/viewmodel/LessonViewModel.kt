@@ -57,7 +57,7 @@ class LessonViewModel(application: Application): AndroidViewModel(application) {
             answer = "",
             statusWordGuesser = StatusWordGuesser.NEW,
             exerciseIndex = lessonIndex,
-            exercise = lesson,
+            exercise = lesson ?: _uiState.value.exercise,
             percentualProgress = lessonIndex.toFloat() / exercises.value.size
         )
 
