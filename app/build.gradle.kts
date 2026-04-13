@@ -25,7 +25,7 @@ android {
             buildConfigField(
                 "String",
                 "BASE_URL",
-                "\"http://192.168.15.14:3000\""
+                "\"http://192.168.15.11:3000\""
             )
         }
         release {
