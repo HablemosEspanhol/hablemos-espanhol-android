@@ -31,11 +31,12 @@ import io.github.cadnunsdimir.android.javierchopeklecciones.ui.viewmodel.LoginUi
 enum class AppDestinations(
     val label: String,
     val icon: ImageVector,
-    val showLogged: Boolean? = null
+    val showLogged: Boolean? = null,
+    val disabled: Boolean = false
 ) {
     HOME("Inicio", Icons.Default.Home),
-    EXERCISES_V1("Ejercícios (offline)", Icons.Default.Create, false),
-    EXERCISES_V2("Ejercícios", Icons.Default.Create, true),
+    EXERCISES_V1("Exercícios (offline)", Icons.Default.Create, false, disabled = true),
+    EXERCISES_V2("Exercícios", Icons.Default.Create, true),
     PROFILE("Perfil", Icons.Default.AccountBox, true),
     LOGIN("Login", Icons.Default.AccountBox, false),
 }
@@ -50,8 +51,9 @@ fun JavierChopekLeccionesApp(loginViewModel: LoginUiViewModel = viewModel()) {
     NavigationSuiteScaffold(
         navigationSuiteItems = {
             AppDestinations.entries.forEach {
-                val showMenu = it.showLogged == null ||
-                        it.showLogged == isLogged.value
+                val showMenu = (it.showLogged == null ||
+                        it.showLogged == isLogged.value) &&
+                        !it.disabled
 
                 if (showMenu){
                     item(
@@ -76,19 +78,18 @@ fun JavierChopekLeccionesApp(loginViewModel: LoginUiViewModel = viewModel()) {
 
         ) { innerPadding ->
             when(currentDestination) {
-                AppDestinations.HOME -> HomeScreen(innerPadding) {
-                    currentDestination = if(isLogged.value) AppDestinations.EXERCISES_V2 else AppDestinations.EXERCISES_V1
+                AppDestinations.HOME -> HomeScreen(viewmodel = loginViewModel) {
+                    currentDestination = if(isLogged.value) AppDestinations.EXERCISES_V2 else AppDestinations.LOGIN
                 }
                 AppDestinations.EXERCISES_V1 -> LessonScreen()
                 AppDestinations.EXERCISES_V2 -> LessonScreenV2(loginViewModel = loginViewModel)
                 AppDestinations.PROFILE -> ProfileScreen(innerPadding, loginViewModel) {
                     currentDestination = AppDestinations.HOME
                 }
-                AppDestinations.LOGIN -> LoginScreen(innerPadding, loginViewModel){
+                AppDestinations.LOGIN -> LoginScreen(innerPadding, loginViewModel) {
                     currentDestination = AppDestinations.HOME
                 }
             }
-
         }
     }
 }

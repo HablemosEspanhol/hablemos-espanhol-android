@@ -3,7 +3,6 @@ package io.github.cadnunsdimir.android.javierchopeklecciones.ui.screen
 import android.content.Context
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -22,14 +21,18 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat.getString
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.cadnunsdimir.android.javierchopeklecciones.R
+import io.github.cadnunsdimir.android.javierchopeklecciones.ui.viewmodel.LoginUiViewModel
 
 @Composable
 fun HomeScreen(
-    innerPadding: PaddingValues,
+    viewmodel: LoginUiViewModel,
     ctx: Context = LocalContext.current,
     onStartLesson: () -> Unit = {}
 ) {
+    val isLogged = viewmodel.isLogged().collectAsStateWithLifecycle(false)
+    val startLessonButtonText = if(isLogged.value) "Iniciar lição" else "Faça Login"
 
     Column(
         modifier = Modifier
@@ -71,7 +74,7 @@ fun HomeScreen(
                 .fillMaxWidth()
                 .height(56.dp)
         ) {
-            Text("Iniciar lição")
+            Text(startLessonButtonText)
         }
     }
 }
