@@ -95,6 +95,7 @@ fun LoginScreen(
                     label = { Text("Senha") },
                     isError = loginViewModel.isError(FormField.PASSWORD),
                     singleLine = true,
+                    enabled = false,
                     visualTransformation = PasswordVisualTransformation(),
                     keyboardOptions = KeyboardOptions(
                         keyboardType = KeyboardType.Password,
@@ -109,7 +110,8 @@ fun LoginScreen(
                         }
                     )
                 )
-
+                Text("Obs.: [Login em construção] Para acessar o sistema, " +
+                        "insira apenas o seu primeiro nome e clique em entrar")
                 Spacer(modifier = Modifier.height(24.dp))
 
                 Button(

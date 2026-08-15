@@ -25,14 +25,14 @@ android {
             buildConfigField(
                 "String",
                 "BASE_URL",
-                "\"http://192.168.15.14:3000\""
+                "\"http://192.168.15.12:3002\""
             )
         }
         release {
             buildConfigField(
                 "String",
                 "BASE_URL",
-                "\"http://srv797683.hstgr.cloud:3001\""
+                "\"http://srv797683.hstgr.cloud:3002\""
             )
             isMinifyEnabled = false
             proguardFiles(
