@@ -17,5 +17,6 @@ data class LessonState(
     val correctAnswer: String? = "",
     val completedLesson: Boolean = false,
     val score: Int = 20,
-    val level: String = "A1"
+    val level: String = "A1",
+    val isLoading: Boolean? = null
 )

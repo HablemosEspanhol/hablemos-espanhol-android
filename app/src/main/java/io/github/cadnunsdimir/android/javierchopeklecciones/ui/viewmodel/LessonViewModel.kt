@@ -25,6 +25,9 @@ class LessonViewModel(application: Application): AndroidViewModel(application) {
     fun loadExercises(username: String, proficiencyLevel: String) {
         viewModelScope.launch {
             try {
+                _uiState.value  = _uiState.value.copy(
+                    isLoading = true
+                )
                 val result = restClient.fetchExercises(username)
                 _exercises.value = result
                 _uiState.value  = _uiState.value.copy(
@@ -32,7 +35,8 @@ class LessonViewModel(application: Application): AndroidViewModel(application) {
                     exercise = _exercises.value[0],
                     exerciseIndex = 0,
                     level = proficiencyLevel,
-                    completedLesson = false
+                    completedLesson = false,
+                    isLoading = false
                 )
             } catch (e: Exception) {
                 NotificationService.notify("Ocorreu um erro ao carregar: ${e.message}")
