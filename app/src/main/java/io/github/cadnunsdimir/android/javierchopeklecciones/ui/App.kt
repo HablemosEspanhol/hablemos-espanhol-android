@@ -21,6 +21,8 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import io.github.cadnunsdimir.android.javierchopeklecciones.app.service.auth.AuthState
+import io.github.cadnunsdimir.android.javierchopeklecciones.app.service.auth.TokenManager
 import io.github.cadnunsdimir.android.javierchopeklecciones.ui.screen.HomeScreen
 import io.github.cadnunsdimir.android.javierchopeklecciones.ui.screen.LessonScreen
 import io.github.cadnunsdimir.android.javierchopeklecciones.ui.screen.LessonScreenV2
@@ -43,16 +45,16 @@ enum class AppDestinations(
 
 
 @Composable
-fun JavierChopekLeccionesApp(loginViewModel: LoginUiViewModel = viewModel()) {
+fun JavierChopekLeccionesApp(loginViewModel: LoginUiViewModel = viewModel(), tokenManager: TokenManager) {
     var currentDestination by rememberSaveable { mutableStateOf(AppDestinations.HOME) }
-    val isLogged = loginViewModel.isLogged().collectAsState(false)
+    val isLogged = tokenManager.authState.collectAsState().value == AuthState.AUTHENTICATED
     loginViewModel.loadUserStats()
 
     NavigationSuiteScaffold(
         navigationSuiteItems = {
             AppDestinations.entries.forEach {
                 val showMenu = (it.showLogged == null ||
-                        it.showLogged == isLogged.value) &&
+                        it.showLogged == isLogged) &&
                         !it.disabled
 
                 if (showMenu){
@@ -77,18 +79,25 @@ fun JavierChopekLeccionesApp(loginViewModel: LoginUiViewModel = viewModel()) {
                 .padding(top= 40.dp)
 
         ) { innerPadding ->
+            if(!isLogged && !arrayOf(AppDestinations.HOME, AppDestinations.LOGIN).contains(currentDestination)) {
+                currentDestination = AppDestinations.LOGIN
+            }
+
+            if(isLogged && currentDestination == AppDestinations.LOGIN) {
+                currentDestination = AppDestinations.HOME
+            }
+
             when(currentDestination) {
-                AppDestinations.HOME -> HomeScreen(viewmodel = loginViewModel) {
-                    currentDestination = if(isLogged.value) AppDestinations.EXERCISES_V2 else AppDestinations.LOGIN
+                AppDestinations.HOME -> HomeScreen(tokenManager) {
+                    currentDestination = if(isLogged) AppDestinations.EXERCISES_V2 else AppDestinations.LOGIN
                 }
                 AppDestinations.EXERCISES_V1 -> LessonScreen()
                 AppDestinations.EXERCISES_V2 -> LessonScreenV2(loginViewModel = loginViewModel)
                 AppDestinations.PROFILE -> ProfileScreen(innerPadding, loginViewModel) {
+                    tokenManager.logout()
                     currentDestination = AppDestinations.HOME
                 }
-                AppDestinations.LOGIN -> LoginScreen(innerPadding, loginViewModel) {
-                    currentDestination = AppDestinations.HOME
-                }
+                AppDestinations.LOGIN -> LoginScreen(innerPadding, loginViewModel)
             }
         }
     }
@@ -97,5 +106,5 @@ fun JavierChopekLeccionesApp(loginViewModel: LoginUiViewModel = viewModel()) {
 @Preview(showBackground = true)
 @Composable
 fun AppPreview() {
-    JavierChopekLeccionesApp()
+    JavierChopekLeccionesApp(tokenManager = TokenManager.instance())
 }

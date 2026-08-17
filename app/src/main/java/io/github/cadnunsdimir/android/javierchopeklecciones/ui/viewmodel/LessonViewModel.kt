@@ -5,8 +5,8 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import io.github.cadnunsdimir.android.javierchopeklecciones.app.dto.AnswerRequest
 import io.github.cadnunsdimir.android.javierchopeklecciones.app.dto.ExerciseApiResponse
-import io.github.cadnunsdimir.android.javierchopeklecciones.app.service.ApiLessonRestClientV2
 import io.github.cadnunsdimir.android.javierchopeklecciones.app.service.NotificationService
+import io.github.cadnunsdimir.android.javierchopeklecciones.app.service.lesson.ApiLessonRestClientV2
 import io.github.cadnunsdimir.android.javierchopeklecciones.ui.components.enums.StatusWordGuesser
 import io.github.cadnunsdimir.android.javierchopeklecciones.ui.state.LessonState
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -22,13 +22,13 @@ class LessonViewModel(application: Application): AndroidViewModel(application) {
     val uiState: StateFlow<LessonState> = _uiState.asStateFlow()
     val answers: MutableList<AnswerRequest> = mutableListOf()
 
-    fun loadExercises(username: String, proficiencyLevel: String) {
+    fun loadExercises(proficiencyLevel: String) {
         viewModelScope.launch {
             try {
                 _uiState.value  = _uiState.value.copy(
                     isLoading = true
                 )
-                val result = restClient.fetchExercises(username)
+                val result = restClient.fetchExercises()
                 _exercises.value = result
                 _uiState.value  = _uiState.value.copy(
                     percentualProgress = 0f,
@@ -49,7 +49,7 @@ class LessonViewModel(application: Application): AndroidViewModel(application) {
         _uiState.value = _uiState.value.copy(answer = value)
     }
 
-    fun nextQuestion(username: String) {
+    fun nextQuestion() {
         val lessonIndex = _uiState.value.exerciseIndex +1
         var lesson: ExerciseApiResponse? = null
         val answeredAllQuestions = lessonIndex >= exercises.value.size
@@ -69,7 +69,6 @@ class LessonViewModel(application: Application): AndroidViewModel(application) {
 
             viewModelScope.launch {
                 val response = restClient.submitAnswers(
-                    username = username,
                     answers = answers
                 )
 
@@ -84,7 +83,7 @@ class LessonViewModel(application: Application): AndroidViewModel(application) {
 
     }
 
-    fun checkAnswer(username: String) {
+    fun checkAnswer() {
         viewModelScope.launch {
             try {
                 val answerRequest = AnswerRequest(
@@ -92,7 +91,6 @@ class LessonViewModel(application: Application): AndroidViewModel(application) {
                     _uiState.value.answer.trim()
                     )
                 val response = restClient.checkAnswer(
-                    username = username,
                     exerciseId = answerRequest.exerciseId,
                     answer = answerRequest.answer
                 )

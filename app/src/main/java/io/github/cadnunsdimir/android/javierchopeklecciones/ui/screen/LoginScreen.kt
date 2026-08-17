@@ -33,7 +33,6 @@ import io.github.cadnunsdimir.android.javierchopeklecciones.ui.viewmodel.LoginUi
 fun LoginScreen(
     innerPadding: PaddingValues,
     loginViewModel: LoginUiViewModel,
-    onLoginSuccess: () -> Unit
 ) {
 
     val focusManager = LocalFocusManager.current
@@ -95,7 +94,6 @@ fun LoginScreen(
                     label = { Text("Senha") },
                     isError = loginViewModel.isError(FormField.PASSWORD),
                     singleLine = true,
-                    enabled = false,
                     visualTransformation = PasswordVisualTransformation(),
                     keyboardOptions = KeyboardOptions(
                         keyboardType = KeyboardType.Password,
@@ -104,21 +102,18 @@ fun LoginScreen(
                     keyboardActions = KeyboardActions(
                         onDone = {
                             focusManager.clearFocus()
-                            if (uiState.value.formIsValid && loginViewModel.login()) {
-                                onLoginSuccess()
+                            if (uiState.value.formIsValid) {
+                                loginViewModel.login()
                             }
                         }
                     )
                 )
-                Text("Obs.: [Login em construção] Para acessar o sistema, " +
-                        "insira apenas o seu primeiro nome e clique em entrar")
+
                 Spacer(modifier = Modifier.height(24.dp))
 
                 Button(
                     onClick = {
-                        if (loginViewModel.login()) {
-                            onLoginSuccess()
-                        }
+                        loginViewModel.login()
                     },
                     enabled = uiState.value.formIsValid,
                     modifier = Modifier

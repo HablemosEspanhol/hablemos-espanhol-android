@@ -1,4 +1,4 @@
-package io.github.cadnunsdimir.android.javierchopeklecciones.app.service
+package io.github.cadnunsdimir.android.javierchopeklecciones.app.service.lesson
 
 import android.content.Context
 import io.github.cadnunsdimir.android.javierchopeklecciones.app.db.entity.Lesson

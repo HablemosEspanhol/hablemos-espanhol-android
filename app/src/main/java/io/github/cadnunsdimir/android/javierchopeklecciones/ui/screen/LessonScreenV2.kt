@@ -42,7 +42,7 @@ fun LessonScreenV2(
 
     if(lesson.exercise == null) {
         LaunchedEffect(Unit) {
-            viewModel.loadExercises(login.login, login.proficiencyLevel)
+            viewModel.loadExercises(login.proficiencyLevel)
         }
     }
 
@@ -62,7 +62,7 @@ fun LessonScreenV2(
             score = lesson.score,
             message = lesson.message,
             onNextLesson = {
-                viewModel.loadExercises(login.login, lesson.level)
+                viewModel.loadExercises(lesson.level)
             }
         )
     }
@@ -134,11 +134,11 @@ fun LessonScreenV2(
 
         if (lesson.statusWordGuesser != StatusWordGuesser.DONE) {
             PrimaryButton("Verificar") {
-                viewModel.checkAnswer(login.login)
+                viewModel.checkAnswer()
             }
         } else {
             PrimaryButton("Continuar") {
-                viewModel.nextQuestion(login.login)
+                viewModel.nextQuestion()
             }
         }
     }
