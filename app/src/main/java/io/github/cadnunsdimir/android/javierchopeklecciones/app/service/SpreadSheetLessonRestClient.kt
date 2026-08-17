@@ -1,7 +1,8 @@
 package io.github.cadnunsdimir.android.javierchopeklecciones.app.service
 
-import io.github.cadnunsdimir.android.javierchopeklecciones.app.db.entity.Lesson
 import io.github.cadnunsdimir.android.javierchopeklecciones.app.db.entity.LessonWithQuestions
+import io.github.cadnunsdimir.android.javierchopeklecciones.app.service.lesson.BaseLessonRestClient
+import io.github.cadnunsdimir.android.javierchopeklecciones.app.service.lesson.LessonAssetReader
 
 
 class SpreadSheetLessonRestClient : BaseLessonRestClient() {

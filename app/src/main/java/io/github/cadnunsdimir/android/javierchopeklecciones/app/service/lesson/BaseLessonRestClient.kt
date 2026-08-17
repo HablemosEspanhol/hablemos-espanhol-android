@@ -1,6 +1,7 @@
-package io.github.cadnunsdimir.android.javierchopeklecciones.app.service
+package io.github.cadnunsdimir.android.javierchopeklecciones.app.service.lesson
 
 import io.github.cadnunsdimir.android.javierchopeklecciones.app.db.entity.LessonWithQuestions
+import io.github.cadnunsdimir.android.javierchopeklecciones.app.service.SpreadSheetLessonRestClient
 import java.io.BufferedReader
 import java.io.IOException
 import java.io.InputStreamReader

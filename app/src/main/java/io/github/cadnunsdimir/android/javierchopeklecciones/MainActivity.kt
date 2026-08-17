@@ -8,6 +8,8 @@ import androidx.activity.enableEdgeToEdge
 import androidx.lifecycle.lifecycleScope
 import io.github.cadnunsdimir.android.javierchopeklecciones.app.db.repository.DatabaseProvider
 import io.github.cadnunsdimir.android.javierchopeklecciones.app.service.NotificationService
+import io.github.cadnunsdimir.android.javierchopeklecciones.app.service.RetrofitClient
+import io.github.cadnunsdimir.android.javierchopeklecciones.app.service.auth.TokenManager
 import io.github.cadnunsdimir.android.javierchopeklecciones.ui.JavierChopekLeccionesApp
 import io.github.cadnunsdimir.android.javierchopeklecciones.ui.theme.JavierChopekLeccionesTheme
 import kotlinx.coroutines.Dispatchers
@@ -18,6 +20,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+        val tokenManager: TokenManager = TokenManager.init(this@MainActivity)
 
         NotificationService.subscribe {
             showErrorToUserOnMainThread(it)
@@ -27,6 +30,8 @@ class MainActivity : ComponentActivity() {
             withContext(Dispatchers.IO){
                 try{
                     DatabaseProvider.preloadData(this@MainActivity)
+
+                    RetrofitClient.init(tokenManager)
                 } catch (e: Exception) {
                     showErrorToUserOnMainThread(e.message?:"Erro desconhecido")
                 }
@@ -35,7 +40,7 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             JavierChopekLeccionesTheme {
-                JavierChopekLeccionesApp()
+                JavierChopekLeccionesApp(tokenManager = tokenManager)
             }
         }
     }

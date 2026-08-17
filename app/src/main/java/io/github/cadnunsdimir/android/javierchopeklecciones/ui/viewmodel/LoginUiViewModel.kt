@@ -5,6 +5,8 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import io.github.cadnunsdimir.android.javierchopeklecciones.app.service.NotificationService
+import io.github.cadnunsdimir.android.javierchopeklecciones.app.service.auth.AuthService
 import io.github.cadnunsdimir.android.javierchopeklecciones.ui.dataStore
 import io.github.cadnunsdimir.android.javierchopeklecciones.ui.state.LoginState
 import kotlinx.coroutines.Dispatchers
@@ -25,6 +27,7 @@ class LoginUiViewModel (application: Application): AndroidViewModel(application)
     private val SCORE = "score"
     private val context = getApplication<Application>()
     private val _uiState = MutableStateFlow(LoginState())
+    private val authService = AuthService.instance()
     val uiState: StateFlow<LoginState> = _uiState.asStateFlow()
 
     fun onLoginChange(value: String) {
@@ -65,25 +68,21 @@ class LoginUiViewModel (application: Application): AndroidViewModel(application)
         }
     }
 
-    fun login(): Boolean {
+    fun login() {
         viewModelScope.launch(Dispatchers.IO) {
-            saveUserName(_uiState.value.login)
+            try {
+                val user = authService.login(_uiState.value.login, _uiState.value.password)
+                saveUserName(user.username)
+            } catch (e: Exception) {
+                NotificationService.notify("Ocorreu um erro ao realizar login: ${e.message}")
+                e.printStackTrace()
+            }
         }
-
-        return true
     }
 
     fun logout() {
         viewModelScope.launch(Dispatchers.IO) {
             saveUserName("")
-        }
-    }
-
-    fun isLogged() : Flow<Boolean>{
-        return getUserName().map {
-            if (!it.isNullOrBlank())
-                _uiState.value = _uiState.value.copy(login = it)
-            return@map !it.isNullOrBlank()
         }
     }
 

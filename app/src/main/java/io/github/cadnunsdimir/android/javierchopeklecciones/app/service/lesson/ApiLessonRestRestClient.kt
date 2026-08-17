@@ -1,8 +1,9 @@
-package io.github.cadnunsdimir.android.javierchopeklecciones.app.service
+package io.github.cadnunsdimir.android.javierchopeklecciones.app.service.lesson
 
 import io.github.cadnunsdimir.android.javierchopeklecciones.app.db.entity.Lesson
 import io.github.cadnunsdimir.android.javierchopeklecciones.app.db.entity.LessonWithQuestions
 import io.github.cadnunsdimir.android.javierchopeklecciones.app.db.entity.Question
+import io.github.cadnunsdimir.android.javierchopeklecciones.app.service.NotificationService
 import org.json.JSONObject
 
 class ApiLessonRestRestClient: BaseLessonRestClient() {

@@ -7,7 +7,7 @@ import androidx.room.RoomDatabase
 import io.github.cadnunsdimir.android.javierchopeklecciones.app.db.entity.Lesson
 import io.github.cadnunsdimir.android.javierchopeklecciones.app.db.entity.MyProgress
 import io.github.cadnunsdimir.android.javierchopeklecciones.app.db.entity.Question
-import io.github.cadnunsdimir.android.javierchopeklecciones.app.service.BaseLessonRestClient
+import io.github.cadnunsdimir.android.javierchopeklecciones.app.service.lesson.BaseLessonRestClient
 import io.github.cadnunsdimir.android.javierchopeklecciones.app.service.NotificationService
 
 

@@ -13,6 +13,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
@@ -21,18 +22,18 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat.getString
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.cadnunsdimir.android.javierchopeklecciones.R
-import io.github.cadnunsdimir.android.javierchopeklecciones.ui.viewmodel.LoginUiViewModel
+import io.github.cadnunsdimir.android.javierchopeklecciones.app.service.auth.AuthState
+import io.github.cadnunsdimir.android.javierchopeklecciones.app.service.auth.TokenManager
 
 @Composable
 fun HomeScreen(
-    viewmodel: LoginUiViewModel,
+    tokenManager: TokenManager,
     ctx: Context = LocalContext.current,
     onStartLesson: () -> Unit = {}
 ) {
-    val isLogged = viewmodel.isLogged().collectAsStateWithLifecycle(false)
-    val startLessonButtonText = if(isLogged.value) "Iniciar lição" else "Faça Login"
+    val authState = tokenManager.authState.collectAsState()
+    val startLessonButtonText = if(authState.value == AuthState.AUTHENTICATED) "Iniciar lição" else "Faça Login"
 
     Column(
         modifier = Modifier
