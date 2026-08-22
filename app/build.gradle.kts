@@ -1,8 +1,21 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.ksp)
 }
+
+
+val localProperties = Properties().apply {
+    val localPropertiesFile = rootProject.file("local.properties")
+    if (localPropertiesFile.exists()) {
+        load(localPropertiesFile.inputStream())
+    }
+}
+
+val debugBaseUrl = localProperties.getProperty("BASE_URL_DEBUG") ?: "\"http://localhost:3002\""
+val releaseBaseUrl = localProperties.getProperty("BASE_URL_RELEASE") ?: "\"http://localhost:3002\""
 
 android {
     namespace = "io.github.cadnunsdimir.android.javierchopeklecciones"
@@ -22,18 +35,10 @@ android {
 
     buildTypes {
         debug {
-            buildConfigField(
-                "String",
-                "BASE_URL",
-                "\"http://192.168.15.12:3002\""
-            )
+            buildConfigField("String", "BASE_URL", debugBaseUrl)
         }
         release {
-            buildConfigField(
-                "String",
-                "BASE_URL",
-                "\"http://srv797683.hstgr.cloud:3002\""
-            )
+            buildConfigField("String", "BASE_URL", releaseBaseUrl)
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
