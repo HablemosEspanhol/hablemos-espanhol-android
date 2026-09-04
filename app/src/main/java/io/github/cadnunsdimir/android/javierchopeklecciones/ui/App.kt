@@ -88,9 +88,12 @@ fun JavierChopekLeccionesApp(loginViewModel: LoginUiViewModel = viewModel(), tok
             }
 
             when(currentDestination) {
-                AppDestinations.HOME -> HomeScreen(tokenManager) {
-                    currentDestination = if(isLogged) AppDestinations.EXERCISES_V2 else AppDestinations.LOGIN
-                }
+                AppDestinations.HOME -> HomeScreen(
+                    tokenManager = tokenManager,
+                    onCreateAccountOrLogin = { currentDestination = AppDestinations.LOGIN },
+                    onTakeLevelTest = { currentDestination = AppDestinations.EXERCISES_V2 },
+                    onContinueLesson = { currentDestination = AppDestinations.EXERCISES_V2 }
+                )
                 AppDestinations.EXERCISES_V1 -> LessonScreen()
                 AppDestinations.EXERCISES_V2 -> LessonScreenV2(loginViewModel = loginViewModel)
                 AppDestinations.PROFILE -> ProfileScreen(innerPadding, loginViewModel) {
