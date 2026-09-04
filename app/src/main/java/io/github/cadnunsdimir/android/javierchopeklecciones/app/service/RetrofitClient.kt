@@ -5,6 +5,7 @@ import io.github.cadnunsdimir.android.javierchopeklecciones.app.service.auth.Aut
 import io.github.cadnunsdimir.android.javierchopeklecciones.app.service.auth.AuthRestClient
 import io.github.cadnunsdimir.android.javierchopeklecciones.app.service.auth.TokenManager
 import io.github.cadnunsdimir.android.javierchopeklecciones.app.service.lesson.ExerciseApiService
+import io.github.cadnunsdimir.android.javierchopeklecciones.app.service.userprogression.UserProgressionRestContract
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -46,5 +47,21 @@ object RetrofitClient {
             .addConverterFactory(GsonConverterFactory.create())
             .build()
             .create(AuthRestClient::class.java)
+    }
+
+    val userProgressionApi: UserProgressionRestContract by lazy {
+        Retrofit.Builder()
+            .baseUrl(BuildConfig.BASE_URL)
+            .client(
+                OkHttpClient.Builder()
+                    .connectTimeout(10, TimeUnit.SECONDS)
+                    .readTimeout(10, TimeUnit.SECONDS)
+                    .writeTimeout(10, TimeUnit.SECONDS)
+                    .callTimeout(10, TimeUnit.SECONDS)
+                    .addInterceptor(AuthInterceptor(tokenManager))
+                    .build())
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+            .create(UserProgressionRestContract::class.java)
     }
 }
